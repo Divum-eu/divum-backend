@@ -1,0 +1,48 @@
+info:
+  name: UpdateMinecraftServerConfiguration
+  type: http
+  seq: 14
+
+http:
+  method: PATCH
+  url: "{{address}}/{{base_route}}/minecraft-servers/{{minecraft_server_id}}"
+  body:
+    type: json
+    data: |-
+      { 
+        server_name: "MyAwesomeServer",
+        server_domain: "MyAwesomeServerDomain.divum.eu",
+        minecraft_server_config: {
+          // As per the official Minecraft server documentation (default values listed here)
+          "memory_limit": 2000,
+          "cpu_cores_limit": 2,
+          "eula": true,
+          "version": "latest",
+          "type": "vanilla",
+          "motd": "Brought to you by Divum. Enjoy!",
+          "difficulty": "easy",
+          "mode": "survival",
+          "level": "world",
+          "online_mode": true,
+          "resource_pack": "",
+          "resource_pack_sha1": "",
+          "resource_pack_enforce": false,
+          "enable_whitelist": false,
+          "whitelist": [],
+          "override_whitelist": false,
+          "enable_rcon": true,
+          "rcon_password": "your_secure_password",
+          "broadcast_rcon_to_ops": false,
+          "ops": [],
+          "op_permission_level": 0,
+          "seed": "",
+          "pvp": true
+        }
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

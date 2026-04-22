@@ -1,0 +1,22 @@
+info:
+  name: EditUser
+  type: http
+  seq: 8
+
+http:
+  method: PATCH
+  url: "{{address}}/{{base_route}}/users/{{user_id}}"
+  body:
+    type: json
+    data: |-
+      {
+        username: "Dimitar2"
+        // More fields will be added as necessary
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

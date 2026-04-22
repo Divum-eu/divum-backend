@@ -1,0 +1,10 @@
+name: Dev
+variables:
+  - name: address
+    value: localhost
+  - name: base_route
+    value: api/v1
+  - name: minecraft_server_id
+    value: "4"
+  - name: user_id
+    value: "5"

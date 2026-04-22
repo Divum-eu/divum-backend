@@ -1,0 +1,18 @@
+info:
+  name: GetMinecraftServerStatus
+  type: websocket
+  seq: 9
+
+websocket:
+  url: "{{address}}/{{base_route}}/minecraft-servers/{{minecraft_server_id}}/status"
+  message:
+    type: text
+    data: |-
+      {
+        // This data will be used for the Minecraft server dashboard on the frontend
+      }
+  auth: inherit
+
+settings:
+  timeout: 0
+  keepAliveInterval: 0

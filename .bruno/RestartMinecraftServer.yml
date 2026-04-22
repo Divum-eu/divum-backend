@@ -1,0 +1,18 @@
+info:
+  name: RestartMinecraftServer
+  type: http
+  seq: 12
+
+http:
+  method: POST
+  url: "{{address}}/{{base_route}}/minecraft-servers/{{minecraft_server_id}}/restart"
+  body:
+    type: json
+    data: ""
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

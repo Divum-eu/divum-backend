@@ -1,0 +1,18 @@
+info:
+  name: RemoveMinecraftServer
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: "{{address}}/{{base_route}}/minecraft-servers/{{minecraft_server_id}}"
+  body:
+    type: json
+    data: ""
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

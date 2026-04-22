@@ -1,0 +1,10 @@
+name: Prod
+variables:
+  - name: address
+    value: api.divum.eu
+  - name: base_route
+    value: v1
+  - name: minecraft_server_id
+    value: "4"
+  - name: user_id
+    value: "5"

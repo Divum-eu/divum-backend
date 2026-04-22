@@ -1,0 +1,18 @@
+info:
+  name: RemoveUser
+  type: http
+  seq: 7
+
+http:
+  method: DELETE
+  url: "{{address}}/{{base_route}}/users/{{user_id}}"
+  body:
+    type: json
+    data: ""
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
