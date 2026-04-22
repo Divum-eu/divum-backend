@@ -1,0 +1,22 @@
+info:
+  name: CreateAuthToken
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{address}}/{{base_route}}/users/token"
+  body:
+    type: json
+    data: |-
+      {
+        username: "Dimitar",
+        password: "123456" // As I said, we'll have TLS...
+      {
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

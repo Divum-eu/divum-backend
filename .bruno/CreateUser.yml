@@ -1,0 +1,23 @@
+info:
+  name: CreateUser
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{address}}/{{base_route}}/users"
+  body:
+    type: json
+    data: |-
+      {
+        username: "Dimitar",
+        email: "dimitar@divum.eu",
+        password: "123456" // We'll have TLS obviously
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

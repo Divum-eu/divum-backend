@@ -1,0 +1,23 @@
+info:
+  name: StartMinecraftServer
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{address}}/{{base_route}}/minecraft-servers/{{minecraft_server_id}}/start"
+  body:
+    type: json
+    data: ""
+  auth: inherit
+
+runtime:
+  variables:
+    - name: server_id
+      value: "4"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
