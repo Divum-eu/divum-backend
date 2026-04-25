@@ -3,6 +3,8 @@ package eu.divum.divumbackend.services;
 import eu.divum.divumbackend.dtos.cloudflare.CloudflareDNSCreateResponse;
 import eu.divum.divumbackend.dtos.cloudflare.CloudflareDNSListResponse;
 import eu.divum.divumbackend.dtos.cloudflare.CloudflareDNSRequest;
+import eu.divum.divumbackend.exceptions.HTTPRequestException;
+import eu.divum.divumbackend.exceptions.cloudflare.CloudflareAPIException;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
@@ -60,7 +62,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
 
 
             if (response.statusCode() != 200) {
-                throw new RuntimeException("Cloudflare API error");
+                throw new CloudflareAPIException("Cloudflare API exception");
             }
 
             CloudflareDNSCreateResponse data = jsonMapper.readValue(response.body(), CloudflareDNSCreateResponse.class);
@@ -68,7 +70,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
             return data.result().name();
 
         } catch (IOException | InterruptedException exception) {
-            throw new RuntimeException("HTTP request failed");
+            throw new HTTPRequestException();
         }
     }
 
@@ -92,7 +94,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
                 return response.statusCode() == 200;
 
             } catch (IOException | InterruptedException exception) {
-                throw new RuntimeException("HTTP request failed");
+                throw new HTTPRequestException();
             }
         }
 
@@ -155,7 +157,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
 
 
             if (response.statusCode() != 200) {
-                throw new RuntimeException("Cloudflare API error");
+                throw new CloudflareAPIException("Cloudflare API exception");
             }
 
             CloudflareDNSListResponse dnsListResponse = jsonMapper.readValue(response.body(), CloudflareDNSListResponse.class);
@@ -163,7 +165,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
             return dnsListResponse.result().isEmpty() ? null : dnsListResponse.result().getFirst().id();
 
         } catch (IOException | InterruptedException exception) {
-            throw new RuntimeException("HTTP request failed");
+            throw new HTTPRequestException();
         }
     }
 }
