@@ -1,0 +1,12 @@
+app:
+  domain: ${DOMAIN}
+
+spring:
+  application:
+    name: divum-backend
+  config:
+    import: optional:file:.env[.properties]
+
+cloudflare:
+  zone-id: ${CLOUDFLARE_DOMAIN_ZONE_ID}
+  domain-api-token: ${CLOUDFLARE_DOMAIN_API_TOKEN}
