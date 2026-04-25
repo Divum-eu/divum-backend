@@ -84,7 +84,6 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
             String endpoint = String.format(API_URL, zoneId) + "/" + DNSRecordID;
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(endpoint))
-                    .header("Content-Type", "Application/json")
                     .header("Authorization", "Bearer " + apiToken)
                     .DELETE()
                     .build();
@@ -147,7 +146,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
-                .header("Content-Type", "Application/json")
+                .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + apiToken)
                 .GET()
                 .build();
