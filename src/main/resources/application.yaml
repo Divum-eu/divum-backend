@@ -6,6 +6,9 @@ spring:
     name: divum-backend
   config:
     import: optional:file:.env[.properties]
+  threads:
+    virtual:
+      enabled: true
 
 cloudflare:
   zone-id: ${CLOUDFLARE_DOMAIN_ZONE_ID}
