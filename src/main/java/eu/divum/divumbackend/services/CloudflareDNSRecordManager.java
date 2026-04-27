@@ -5,6 +5,8 @@ import eu.divum.divumbackend.dtos.cloudflare.CloudflareDNSListResponse;
 import eu.divum.divumbackend.dtos.cloudflare.CloudflareDNSRequest;
 import eu.divum.divumbackend.exceptions.HTTPRequestException;
 import eu.divum.divumbackend.exceptions.cloudflare.CloudflareAPIException;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.time.Duration;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.json.JsonMapper;
 
+@RequiredArgsConstructor
 @Service
 public class CloudflareDNSRecordManager implements DNSRecordManager {
     // Follows the documentation at: https://developers.cloudflare.com/api/resources/dns
@@ -32,8 +35,8 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
     @Value("${app.domain}")
     private String domain;
 
-    private final JsonMapper jsonMapper = new JsonMapper();
-    private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+    private final JsonMapper jsonMapper;
+    private final HttpClient httpClient;
 
     @Override
     public String create(String domain, String ipAddress) {
