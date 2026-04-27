@@ -1,23 +1,21 @@
 package eu.divum.divumbackend.domain;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Entity;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.Instant;
+
 import java.util.UUID;
 
 @Entity
 @Table(
         name = "Users",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"username", "emailAaddress"})
+        uniqueConstraints = @UniqueConstraint(columnNames = {"username", "email_address"})
 )
 @Getter
 @Setter
@@ -26,15 +24,16 @@ public class User {
     @Id
     private UUID id;
 
-    @Nonnull
+    @Column(name = "username", nullable = false)
     private String username;
 
-    @Nonnull
+    @Column(name = "email_address", nullable = false)
     private String emailAddress;
 
-    @Nonnull
-    private Date createdOn;
+    @Column(name = "created_on", nullable = false, updatable = false)
+    @CreationTimestamp
+    private Instant createdOn;
 
-    @Nullable
-    private Date deletedOn;
+    @Column(name = "deleted_on")
+    private Instant deletedOn;
 }

@@ -1,16 +1,11 @@
 package eu.divum.divumbackend.domain;
 
 
-import jakarta.annotation.Nonnull;
+import jakarta.persistence.*;
 
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Entity;
-
-import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
@@ -23,14 +18,18 @@ public class ServerMachine {
     @Id
     private UUID id;
 
-    @Nonnull
+    @Column(name = "ip", nullable = false)
     private String ip;
 
+    @Column(name = "total_ram")
     private int totalRam;
 
+    @Column(name = "total_cpu_cores")
     private int totalCpuCores;
 
+    @Column(name = "free_ram")
     private int freeRam;
 
+    @Column(name = "free_cpu_cores")
     private int freeCpuCores;
 }

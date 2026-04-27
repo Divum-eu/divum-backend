@@ -1,15 +1,15 @@
 package eu.divum.divumbackend.domain;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
-import jakarta.annotation.Nullable;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.Instant;
+
 import java.util.UUID;
 
 @Entity
@@ -34,14 +34,15 @@ public class ServerInstance {
     @JoinColumn(name="server_machine_id", nullable = false)
     private ServerMachine serverMachine;
 
-    @Nonnull
+    @Column(name = "address", nullable = false)
     private String address;
 
-    @Nonnull
-    private Date createdOn;
+    @Column(name = "created_on", nullable = false, updatable = false)
+    @CreationTimestamp
+    private Instant createdOn;
 
-    @Nullable
-    private Date deletedOn;
+    @Column(name = "deleted_on")
+    private Instant deletedOn;
 }
 
 
