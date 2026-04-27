@@ -3,21 +3,28 @@ package eu.divum.divumbackend.services;
 import eu.divum.divumbackend.dtos.cloudflare.CloudflareDNSCreateResponse;
 import eu.divum.divumbackend.dtos.cloudflare.CloudflareDNSListResponse;
 import eu.divum.divumbackend.dtos.cloudflare.CloudflareDNSRequest;
+
 import eu.divum.divumbackend.exceptions.HTTPRequestException;
+
 import eu.divum.divumbackend.exceptions.cloudflare.CloudflareAPIException;
-import lombok.AllArgsConstructor;
+
 import lombok.RequiredArgsConstructor;
+
+import org.apache.commons.validator.routines.InetAddressValidator;
+
 import org.springframework.beans.factory.annotation.Value;
 
+import org.springframework.stereotype.Service;
+
+import tools.jackson.databind.json.JsonMapper;
+
 import java.io.IOException;
+
 import java.net.URI;
+
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
-
-import org.springframework.stereotype.Service;
-import tools.jackson.databind.json.JsonMapper;
 
 @RequiredArgsConstructor
 @Service
@@ -131,15 +138,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
     }
 
     private boolean isValidIpv4(String ipAddress) {
-        if (ipAddress == null || ipAddress.isBlank()) {
-            return false;
-        }
-
-        // Strict IPv4 regex: ensures four octets, each between 0 and 255, separated by dots.
-        // It also prevents leading zeros (e.g., "01.02.03.04") which can cause octal conversion bugs.
-        String ipv4Regex = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$";
-
-        return ipAddress.matches(ipv4Regex);
+        return InetAddressValidator.getInstance().isValidInet4Address(ipAddress);
     }
 
     private String isAlreadyRegistered(String domain) {
