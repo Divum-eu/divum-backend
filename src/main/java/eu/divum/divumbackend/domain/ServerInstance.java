@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Table(
-        name = "ServerInstances",
+        name = "server_instances",
         uniqueConstraints = @UniqueConstraint(columnNames = "address")
 )
 @Inheritance(strategy = InheritanceType.JOINED)

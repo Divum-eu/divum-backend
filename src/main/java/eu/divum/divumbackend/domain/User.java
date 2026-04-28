@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Table(
-        name = "Users",
+        name = "users",
         uniqueConstraints = @UniqueConstraint(columnNames = {"username", "email_address"})
 )
 @Getter
@@ -29,6 +29,9 @@ public class User {
 
     @Column(name = "email_address", nullable = false)
     private String emailAddress;
+
+    @Column(name = "password_data", nullable = false)
+    private String passwordData;
 
     @Column(name = "created_on", nullable = false, updatable = false)
     @CreationTimestamp

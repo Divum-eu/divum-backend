@@ -10,12 +10,14 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "ServerMachines", uniqueConstraints = @UniqueConstraint(columnNames = {"ip"}))
+@Table(name = "server_machines", uniqueConstraints = @UniqueConstraint(columnNames = {"ip"}))
 @Getter
 @Setter
 @NoArgsConstructor
 public class ServerMachine {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private UUID id;
 
     @Column(name = "ip", nullable = false)
