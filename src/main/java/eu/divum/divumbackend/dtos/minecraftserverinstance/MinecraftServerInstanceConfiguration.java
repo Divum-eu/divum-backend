@@ -1,14 +1,10 @@
 package eu.divum.divumbackend.dtos.minecraftserverinstance;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.AllArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 public class MinecraftServerInstanceConfiguration {
     private int memoryLimit;
 
@@ -55,4 +51,8 @@ public class MinecraftServerInstanceConfiguration {
     private String seed;
 
     private boolean pvp;
+
+    private String serverName;
+
+    private String serverAddress;
 }

@@ -1,4 +1,4 @@
-package eu.divum.divumbackend.services;
+package eu.divum.divumbackend.services.implementations;
 
 import eu.divum.divumbackend.dtos.cloudflare.CloudflareDNSCreateResponse;
 import eu.divum.divumbackend.dtos.cloudflare.CloudflareDNSListResponse;
@@ -8,11 +8,12 @@ import eu.divum.divumbackend.exceptions.HTTPRequestException;
 
 import eu.divum.divumbackend.exceptions.cloudflare.CloudflareAPIException;
 
-import eu.divum.divumbackend.services.implementations.DNSRecordManager;
+import eu.divum.divumbackend.services.DNSRecordManager;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.commons.validator.routines.InetAddressValidator;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.stereotype.Service;
@@ -44,6 +45,8 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
     private String domain;
 
     private final JsonMapper jsonMapper;
+
+    @Qualifier("http2Client")
     private final HttpClient httpClient;
 
     @Override
@@ -171,3 +174,4 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
         }
     }
 }
+

@@ -1,0 +1,3 @@
+divum-daemon:
+  api-scheme: http://
+  api-version: :8000/api/v1

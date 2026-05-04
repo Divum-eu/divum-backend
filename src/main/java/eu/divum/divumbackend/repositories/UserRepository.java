@@ -4,10 +4,11 @@ import eu.divum.divumbackend.domain.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
-    User findUserByUsername(String username);
+    Optional<User> findUserByUsername(String username);
 
-    User findUserByEmailAddress(String email);
+    Optional<User> findUserByEmailAddress(String email);
 }

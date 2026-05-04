@@ -1,7 +1,7 @@
 name: Dev
 variables:
   - name: address
-    value: localhost
+    value: http://localhost:8080
   - name: base_route
     value: api/v1
   - name: minecraft_server_id

@@ -1,8 +1,11 @@
 package eu.divum.divumbackend.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.context.annotation.Profile;
+import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.net.http.HttpClient;
@@ -12,12 +15,35 @@ import java.time.Duration;
 @Configuration
 public class AppConfig {
     @Bean
-    HttpClient httpClient() {
+    @Qualifier("http2Client")
+    HttpClient http2Client() {
+        return HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+    }
+
+    @Bean
+    @Profile("dev")
+    @Qualifier("httpClient")
+    HttpClient devHttpClient() {
+        return HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).connectTimeout(Duration.ofSeconds(10)).build();
+    }
+
+    @Bean
+    @Profile("!dev")
+    @Qualifier("httpClient")
+    HttpClient prodHttpClient() {
         return HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
     }
 
     @Bean
     JsonMapper jsonMapper() {
         return new JsonMapper();
+    }
+
+    @Bean
+    JsonMapper snakeCaseJsonMapper() {
+        return JsonMapper
+                .builder()
+                .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+                .build();
     }
 }

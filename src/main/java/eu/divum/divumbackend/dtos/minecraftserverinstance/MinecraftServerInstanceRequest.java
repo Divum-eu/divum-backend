@@ -1,5 +1,10 @@
 package eu.divum.divumbackend.dtos.minecraftserverinstance;
 
-public record MinecraftServerInstanceRequest(String serverName, String serverDomain,
-                                             MinecraftServerInstanceConfiguration minecraftServerConfig) {
+import lombok.Data;
+
+@Data
+public class MinecraftServerInstanceRequest {
+    private String username;
+
+    private MinecraftServerInstanceConfiguration configuration;
 }
