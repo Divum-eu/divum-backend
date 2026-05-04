@@ -59,7 +59,7 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     @Qualifier("snakeCaseJsonMapper")
     private final JsonMapper jsonMapper;
 
-    @Value("${divum-daemon.api-url}/minecraft-servers")
+    @Value("${divum-daemon.api-version}/minecraft-servers")
     private String daemonEndpointAddress;
 
     @Value("${divum-daemon.api-scheme}")
@@ -81,15 +81,6 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
                         new MinecraftServerInstanceNotFound("No Minecraft server instance with the given address exists."));
 
         return mapper.mapToResponse(serverInstance);
-    }
-
-    @Override
-    public List<MinecraftServerInstanceResponse> getAllForOwner(String ownerId) {
-        return minecraftServerRepository
-                .findAllByOwnerId(UUID.fromString(ownerId))
-                .stream()
-                .map(mapper::mapToResponse)
-                .toList();
     }
 
     @Override

@@ -6,6 +6,7 @@ import eu.divum.divumbackend.services.MinecraftServerInstanceService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,5 +26,22 @@ public class TestController {
     @PostMapping
     public ResponseEntity<String> createServer(@RequestBody MinecraftServerInstanceRequest request) {
         return ResponseEntity.ok(service.create(request));
+    }
+
+    @GetMapping()
+    public ResponseEntity<MinecraftServerInstanceResponse> getServerTestByAddress(@RequestBody String address) {
+        MinecraftServerInstanceResponse serverInstance = service.getByAddress(address);
+
+        return ResponseEntity.ok(serverInstance);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/{id}/start")
+    public void startServer(@PathVariable String id) {
+        service.start(id);
+    }
+
+    public void stopServer(@PathVariable String id) {
+        service.stop(id);
     }
 }

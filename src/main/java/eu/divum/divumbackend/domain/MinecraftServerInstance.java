@@ -15,7 +15,6 @@ import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "minecraft_server_instances", schema = "divum")
-@SQLRestriction("deleted_on IS NOT NULL")
 @SQLDelete(sql = "UPDATE minecraft_server_instances SET deleted_on = now() WHERE id = ?")
 @Getter
 @Setter
