@@ -14,6 +14,6 @@ import java.util.UUID;
 public interface ServerMachineRepository extends JpaRepository<ServerMachine, UUID> {
     @Query("SELECT s FROM ServerMachine s " +
             "WHERE s.freeCpuCores > :reqCpuCores" +
-            "  AND s.freeRamMb > :reqRam")
+            "  AND s.freeRamMb > :reqRamMb")
     List<ServerMachine> findAllAvailable(@Param("reqCpuCores") float cpuCores, @Param("reqRamMb") int ramMb);
 }

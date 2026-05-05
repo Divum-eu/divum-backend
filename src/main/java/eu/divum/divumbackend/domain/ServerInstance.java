@@ -33,11 +33,11 @@ public class ServerInstance {
     @Column(name = "id", columnDefinition = "uuid")
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "server_machine_id", nullable = false)
     private ServerMachine serverMachine;
 

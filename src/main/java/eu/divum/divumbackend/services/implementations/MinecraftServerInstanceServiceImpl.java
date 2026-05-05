@@ -7,7 +7,6 @@ import eu.divum.divumbackend.domain.MinecraftServerInstance;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceRequest;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceResponse;
 
-import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceStopFailed;
 import eu.divum.divumbackend.repositories.UserRepository;
 import eu.divum.divumbackend.repositories.ServerMachineRepository;
 import eu.divum.divumbackend.repositories.MinecraftServerInstanceRepository;
@@ -20,8 +19,11 @@ import eu.divum.divumbackend.exceptions.user.UserNotFound;
 import eu.divum.divumbackend.exceptions.HTTPRequestException;
 import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
 import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceNotFound;
+import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceStopFailed;
 import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceStartFailed;
 import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceCreationFailed;
+
+import jakarta.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -152,6 +154,7 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     }
 
     @Override
+    @Transactional
     public String create(MinecraftServerInstanceRequest request) {
         int requiredCpuCores = request.configuration().getCpuCoresLimit();
         int requiredRam = request.configuration().getMemoryLimit();
