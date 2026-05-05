@@ -34,17 +34,17 @@ public class ServerMachine {
     @Column(name = "ip", nullable = false, length = DomainConstants.SERVER_MACHINE_IP_MAX_LENGTH)
     private String ip;
 
-    @Column(name = "total_ram")
-    private int totalRam;
+    @Column(name = "total_ram_mb", nullable = false)
+    private int totalRamMb;
 
-    @Column(name = "total_cpu_cores")
-    private int totalCpuCores;
+    @Column(name = "total_cpu_cores", nullable = false)
+    private float totalCpuCores;
 
-    @Column(name = "free_ram")
-    private int freeRam;
+    @Column(name = "free_ram_mb", nullable = false)
+    private int freeRamMb;
 
-    @Column(name = "free_cpu_cores")
-    private int freeCpuCores;
+    @Column(name = "free_cpu_cores", nullable = false)
+    private float freeCpuCores;
 
     @CreationTimestamp
     @Column(name = "created_on", nullable = false, updatable = false)

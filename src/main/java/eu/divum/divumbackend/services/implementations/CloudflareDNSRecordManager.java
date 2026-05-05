@@ -33,7 +33,8 @@ import java.net.http.HttpResponse;
 public class CloudflareDNSRecordManager implements DNSRecordManager {
     // Follows the documentation at: https://developers.cloudflare.com/api/resources/dns
 
-    private static final String API_URL = "https://api.cloudflare.com/client/v4/zones/%s/dns_records";
+    @Value("${cloudflare.api-url}")
+    private String apiUrl;
 
     @Value("${cloudflare.zone-id}")
     private String zoneId;
@@ -57,7 +58,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
         if (!isValidDomain(domain) || isAlreadyRegistered(domain) != null) {
             throw new IllegalArgumentException("Invalid domain or already registered");
         }
-        String endpoint = String.format(API_URL, zoneId);
+        String endpoint = String.format(apiUrl, zoneId);
 
         String payload = jsonMapper.writeValueAsString(
                 // ttl = 0 so it sets to Auto
@@ -95,7 +96,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
         // gets the DNS record ID to send it in the request url
         String DNSRecordID = isAlreadyRegistered(domain);
         if (DNSRecordID != null) {
-            String endpoint = String.format(API_URL, zoneId) + "/" + DNSRecordID;
+            String endpoint = String.format(apiUrl, zoneId) + "/" + DNSRecordID;
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(endpoint))
                     .header("Authorization", "Bearer " + apiToken)
@@ -148,7 +149,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
     private String isAlreadyRegistered(String domain) {
         // Returns the DNS record ID if registered, else returns null
 
-        String endpoint = String.format(API_URL, zoneId) + "?name.exact=" + domain;
+        String endpoint = String.format(apiUrl, zoneId) + "?name.exact=" + domain;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))

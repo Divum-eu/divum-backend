@@ -1,6 +1,7 @@
 package eu.divum.divumbackend.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,6 +36,7 @@ public class AppConfig {
     }
 
     @Bean
+    @Primary
     JsonMapper jsonMapper() {
         return new JsonMapper();
     }

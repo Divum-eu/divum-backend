@@ -1,19 +1,21 @@
-create table divum.server_machines
+create schema if not exists divum;
+
+create table if not exists divum.server_machines
 (
     id              uuid default uuidv4()       not null
         primary key,
     created_on      timestamp(6) with time zone not null,
     deleted_on      timestamp(6) with time zone,
-    free_cpu_cores  integer,
-    free_ram        integer,
+    free_cpu_cores  float not null,
+    free_ram_mb        integer not null,
     ip              varchar(15)                 not null
         constraint uk_server_machines_ip
             unique,
-    total_cpu_cores integer,
-    total_ram       integer
+    total_cpu_cores float not null,
+    total_ram_mb       integer not null
 );
 
-create table divum.users
+create table if not exists divum.users
 (
     id            uuid default uuidv4()       not null
         primary key,
@@ -26,7 +28,7 @@ create table divum.users
         unique (username, email_address)
 );
 
-create table divum.server_instances
+create table if not exists divum.server_instances
 (
     id                uuid default uuidv4()       not null
         primary key,
@@ -44,7 +46,7 @@ create table divum.server_instances
             references divum.server_machines
 );
 
-create table divum.minecraft_server_instances
+create table if not exists divum.minecraft_server_instances
 (
     configuration json not null,
     daemon_id varchar(36) not null,

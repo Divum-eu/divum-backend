@@ -40,7 +40,6 @@ import java.net.http.HttpResponse;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -163,11 +162,9 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
             throw new NoAvailableServerMachines("No server machines for the given RAM and CPU requirements are available.");
         }
 
-        Optional<User> serverCreator = userRepository.findUserByUsername(request.username());
-
-        if (serverCreator.isEmpty()) {
-            throw new UserNotFound("No user with the given username exists.");
-        }
+        User serverCreator = userRepository.findByUsername(request.username())
+                .orElseThrow(() ->
+                        new UserNotFound("No user with the given username exists."));
 
         ServerMachine serverMachine = availableMachines.getFirst();
 
@@ -179,24 +176,19 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
                 .POST(HttpRequest.BodyPublishers.ofString(serverConfigurationPayload))
                 .build();
 
-
         try {
             HttpResponse<String> serverCreationResponse = httpClient.send(serverCreationRequest, HttpResponse.BodyHandlers.ofString());
 
             if (serverCreationResponse.statusCode() < 200 || serverCreationResponse.statusCode() > 299) {
-                throw new MinecraftServerInstanceCreationFailed("Minecraft server creation failed.");
+                throw new MinecraftServerInstanceCreationFailed("Minecraft server instance creation failed.");
             }
 
             String daemonId = jsonMapper.readValue(serverCreationResponse.body(), String.class);
 
-            if (daemonId == null || daemonId.isEmpty()) {
-                throw new MinecraftServerInstanceCreationFailed("The Divum Daemon didn't return an ID for the server.");
-            }
-
             MinecraftServerInstance serverInstanceEntity = mapper.mapToEntity(request);
 
             serverInstanceEntity.setServerMachine(serverMachine);
-            serverInstanceEntity.setOwner(serverCreator.get());
+            serverInstanceEntity.setOwner(serverCreator);
 
             serverInstanceEntity.setName(request.configuration().getServerName());
             serverInstanceEntity.setAddress(request.configuration().getServerAddress());
