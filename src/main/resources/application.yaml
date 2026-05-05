@@ -12,8 +12,8 @@ spring:
     virtual:
       enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/divum?currentSchema=divum
-    username: postgres
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
     driver-class-name: org.postgresql.Driver
 
   jpa:
