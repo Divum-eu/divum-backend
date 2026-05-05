@@ -11,12 +11,14 @@ import eu.divum.divumbackend.repositories.UserRepository;
 import eu.divum.divumbackend.repositories.ServerMachineRepository;
 import eu.divum.divumbackend.repositories.MinecraftServerInstanceRepository;
 
+import eu.divum.divumbackend.services.DNSRecordManager;
 import eu.divum.divumbackend.services.MinecraftServerInstanceService;
 
 import eu.divum.divumbackend.mappers.minecraftserverinstance.MinecraftServerInstanceMapper;
 
 import eu.divum.divumbackend.exceptions.user.UserNotFound;
 import eu.divum.divumbackend.exceptions.HTTPRequestException;
+import eu.divum.divumbackend.exceptions.cloudflare.CloudflareAPIException;
 import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
 import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceNotFound;
 import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceStopFailed;
@@ -52,7 +54,9 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
 
     private final UserRepository userRepository;
 
-    private final MinecraftServerInstanceMapper mapper;
+    private final MinecraftServerInstanceMapper dtoMapper;
+
+    private final DNSRecordManager dnsRecordManager;
 
     @Qualifier("httpClient")
     private final HttpClient httpClient;
@@ -72,7 +76,7 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
                 .orElseThrow(() ->
                         new MinecraftServerInstanceNotFound("No Minecraft server instance with the given ID exists."));
 
-        return mapper.mapToResponse(serverInstance);
+        return dtoMapper.mapToResponse(serverInstance);
     }
 
     @Override
@@ -81,7 +85,7 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
                 .orElseThrow(() ->
                         new MinecraftServerInstanceNotFound("No Minecraft server instance with the given address exists."));
 
-        return mapper.mapToResponse(serverInstance);
+        return dtoMapper.mapToResponse(serverInstance);
     }
 
     @Override
@@ -157,9 +161,9 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     @Transactional
     public String create(MinecraftServerInstanceRequest request) {
         int requiredCpuCores = request.configuration().getCpuCoresLimit();
-        int requiredRam = request.configuration().getMemoryLimit();
+        int requiredRamMb = request.configuration().getMemoryLimit();
 
-        List<ServerMachine> availableMachines = serverMachineRepository.findAllAvailable(requiredCpuCores, requiredRam);
+        List<ServerMachine> availableMachines = serverMachineRepository.findAllAvailable(requiredCpuCores, requiredRamMb);
 
         if (availableMachines.isEmpty()) {
             throw new NoAvailableServerMachines("No server machines for the given RAM and CPU requirements are available.");
@@ -171,37 +175,50 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
 
         ServerMachine serverMachine = availableMachines.getFirst();
 
-        String serverConfigurationPayload = jsonMapper.writeValueAsString(request.configuration());
-
-        HttpRequest serverCreationRequest = HttpRequest.newBuilder()
-                .uri(URI.create(daemonEndpointScheme + serverMachine.getIp() + daemonEndpointAddress))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(serverConfigurationPayload))
-                .build();
+        String registeredServerDomain = "";
 
         try {
-            HttpResponse<String> serverCreationResponse = httpClient.send(serverCreationRequest, HttpResponse.BodyHandlers.ofString());
+            registeredServerDomain =
+                    dnsRecordManager.create(request.configuration().getServerAddress(), serverMachine.getIp());
+
+            String serverConfigurationPayload = jsonMapper.writeValueAsString(request.configuration());
+
+            HttpRequest serverCreationRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(daemonEndpointScheme + serverMachine.getIp() + daemonEndpointAddress))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(serverConfigurationPayload))
+                    .build();
+
+            HttpResponse<String> serverCreationResponse =
+                    httpClient.send(serverCreationRequest, HttpResponse.BodyHandlers.ofString());
 
             if (serverCreationResponse.statusCode() < 200 || serverCreationResponse.statusCode() > 299) {
+                boolean _ = dnsRecordManager.delete(registeredServerDomain);
+
                 throw new MinecraftServerInstanceCreationFailed("Minecraft server instance creation failed.");
             }
 
             String daemonId = jsonMapper.readValue(serverCreationResponse.body(), String.class);
 
-            MinecraftServerInstance serverInstanceEntity = mapper.mapToEntity(request);
-
-            serverInstanceEntity.setServerMachine(serverMachine);
-            serverInstanceEntity.setOwner(serverCreator);
-
-            serverInstanceEntity.setName(request.configuration().getServerName());
-            serverInstanceEntity.setAddress(request.configuration().getServerAddress());
+            MinecraftServerInstance serverInstanceEntity = dtoMapper.mapToEntity(request);
 
             serverInstanceEntity.setDaemonId(daemonId);
+            serverInstanceEntity.setOwner(serverCreator);
+            serverInstanceEntity.setServerMachine(serverMachine);
+            serverInstanceEntity.setAddress(registeredServerDomain);
+            serverInstanceEntity.setName(request.configuration().getServerName());
+            serverInstanceEntity.getConfiguration().setServerAddress(registeredServerDomain);
 
             minecraftServerRepository.save(serverInstanceEntity);
 
             return serverInstanceEntity.getId().toString();
-        } catch (IOException | InterruptedException exception) {
+
+        } catch (IllegalArgumentException | CloudflareAPIException exception) {
+            throw new MinecraftServerInstanceCreationFailed(exception.getMessage());
+
+        } catch (IOException | InterruptedException | HTTPRequestException exception) {
+            boolean _ = dnsRecordManager.delete(registeredServerDomain);
+
             throw new HTTPRequestException();
         }
     }
