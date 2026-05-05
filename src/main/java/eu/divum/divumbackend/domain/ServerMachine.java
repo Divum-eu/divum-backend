@@ -2,23 +2,25 @@ package eu.divum.divumbackend.domain;
 
 
 import eu.divum.divumbackend.constants.DomainConstants;
+
 import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
-import java.time.Instant;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.util.UUID;
+import java.time.Instant;
 
 @Entity
 @Table(name = "server_machines", uniqueConstraints = @UniqueConstraint(columnNames = {"ip"}), schema = "divum")
-@SQLRestriction("deleted_on IS NOT NULL")
-@SQLDelete(sql = "UPDATE server_machines SET deleted_on = now() WHERE id = ?")
+@SQLRestriction("deleted_on IS NULL")
+@SQLDelete(sql = "UPDATE divum.server_machines SET deleted_on = now() WHERE id = ?")
 @Getter
 @Setter
 @NoArgsConstructor

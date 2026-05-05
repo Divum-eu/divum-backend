@@ -23,8 +23,8 @@ import java.util.UUID;
         uniqueConstraints = @UniqueConstraint(columnNames = {"username", "email_address"}),
         schema = "divum"
 )
-@SQLRestriction("deleted_on IS NOT NULL")
-@SQLDelete(sql = "UPDATE users SET deleted_on = now() WHERE id = ?")
+@SQLRestriction("deleted_on IS NULL")
+@SQLDelete(sql = "UPDATE divum.users SET deleted_on = now() WHERE id = ?")
 @Getter
 @Setter
 @AllArgsConstructor

@@ -12,13 +12,13 @@ spring:
     virtual:
       enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/divum
+    url: jdbc:postgresql://localhost:5432/divum?currentSchema=divum
     username: postgres
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       jakarta.persistence.create-database-schemas: true
       hibernate:

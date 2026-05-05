@@ -46,7 +46,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
 
     private final JsonMapper jsonMapper;
 
-    @Qualifier("http2Client")
+    @Qualifier("defaultHttpClient")
     private final HttpClient httpClient;
 
     @Override

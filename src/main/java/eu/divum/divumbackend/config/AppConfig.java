@@ -1,12 +1,12 @@
 package eu.divum.divumbackend.config;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import org.springframework.context.annotation.Profile;
-import tools.jackson.databind.PropertyNamingStrategies;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Qualifier;
+
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.PropertyNamingStrategies;
 
 import java.net.http.HttpClient;
 
@@ -15,8 +15,8 @@ import java.time.Duration;
 @Configuration
 public class AppConfig {
     @Bean
-    @Qualifier("http2Client")
-    HttpClient http2Client() {
+    @Qualifier("defaultHttpClient")
+    HttpClient defaultHttpClient() {
         return HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
     }
 

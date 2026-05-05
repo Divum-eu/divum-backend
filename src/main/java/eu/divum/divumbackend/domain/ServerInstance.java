@@ -1,6 +1,7 @@
 package eu.divum.divumbackend.domain;
 
 import eu.divum.divumbackend.constants.DomainConstants;
+
 import jakarta.persistence.*;
 
 import lombok.Getter;
@@ -13,15 +14,14 @@ import java.time.Instant;
 
 import java.util.UUID;
 
-
 @Entity
 @Table(
         name = "server_instances",
         uniqueConstraints = @UniqueConstraint(columnNames = "address"),
         schema = "divum"
 )
-@SQLRestriction("deleted_on IS NOT NULL")
-@SQLDelete(sql = "UPDATE server_instances SET deleted_on = now() WHERE id = ?")
+@SQLRestriction("deleted_on IS NULL")
+@SQLDelete(sql = "UPDATE divum.server_instances SET deleted_on = now() WHERE id = ?")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Setter
 @Getter
@@ -34,11 +34,11 @@ public class ServerInstance {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name="owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
     @ManyToOne
-    @JoinColumn(name="server_machine_id", nullable = false)
+    @JoinColumn(name = "server_machine_id", nullable = false)
     private ServerMachine serverMachine;
 
     @Column(name = "name", nullable = false, length = DomainConstants.SERVER_INSTANCE_NAME_MAX_LENGTH)

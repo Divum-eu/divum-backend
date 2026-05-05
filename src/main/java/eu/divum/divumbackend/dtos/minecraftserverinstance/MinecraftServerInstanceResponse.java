@@ -1,4 +1,6 @@
 package eu.divum.divumbackend.dtos.minecraftserverinstance;
 
-public record MinecraftServerInstanceResponse(String serverId, String serverName, MinecraftServerInstanceConfiguration configuration) {
+import java.util.UUID;
+
+public record MinecraftServerInstanceResponse(UUID id, MinecraftServerInstanceConfiguration configuration) {
 }

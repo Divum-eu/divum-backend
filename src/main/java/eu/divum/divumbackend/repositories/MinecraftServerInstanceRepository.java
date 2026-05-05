@@ -5,15 +5,10 @@ import eu.divum.divumbackend.domain.MinecraftServerInstance;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.Optional;
 
 @Repository
 public interface MinecraftServerInstanceRepository extends JpaRepository<MinecraftServerInstance, UUID> {
     Optional<MinecraftServerInstance> findByAddress(String address);
-
-    List<MinecraftServerInstance> findAllByOwnerId(UUID ownerId);
-
-    void deleteByAddress(String address);
 }
