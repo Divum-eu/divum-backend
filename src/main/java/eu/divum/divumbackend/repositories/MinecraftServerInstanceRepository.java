@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface MinecraftServerInstanceRepository extends JpaRepository<MinecraftServerInstance, UUID> {
     Optional<MinecraftServerInstance> findByAddress(String address);
+
+    boolean existsByAddress(String address);
 }

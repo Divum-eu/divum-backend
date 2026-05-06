@@ -18,12 +18,9 @@ import eu.divum.divumbackend.mappers.minecraftserverinstance.MinecraftServerInst
 
 import eu.divum.divumbackend.exceptions.user.UserNotFound;
 import eu.divum.divumbackend.exceptions.HTTPRequestException;
+import eu.divum.divumbackend.exceptions.minecraftserverinstance.*;
 import eu.divum.divumbackend.exceptions.cloudflare.CloudflareAPIException;
 import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
-import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceNotFound;
-import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceStopFailed;
-import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceStartFailed;
-import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceCreationFailed;
 
 import jakarta.transaction.Transactional;
 
@@ -162,6 +159,10 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     public String create(MinecraftServerInstanceRequest request) {
         int requiredCpuCores = request.configuration().getCpuCoresLimit();
         int requiredRamMb = request.configuration().getMemoryLimit();
+
+        if (minecraftServerRepository.existsByAddress(request.configuration().getServerAddress())) {
+            throw new MinecraftServerInstanceWithSameAddressExists("A Minecraft server instance with the given address already exists.");
+        }
 
         List<ServerMachine> availableMachines = serverMachineRepository.findAllAvailable(requiredCpuCores, requiredRamMb);
 
