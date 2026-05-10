@@ -37,7 +37,7 @@ http:
           "seed": "",
           "pvp": true,
           "serverName": "MyAwesomeServer",
-          "serverAddress": "127.0.0.2"
+          "serverAddress": "dimitar.divum.eu"
         }
       }
   auth: inherit

@@ -75,7 +75,6 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-
             if (response.statusCode() != 200) {
                 throw new CloudflareAPIException("Cloudflare API exception");
             }

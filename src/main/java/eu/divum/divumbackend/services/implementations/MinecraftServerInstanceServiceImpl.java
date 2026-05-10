@@ -61,7 +61,7 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     @Qualifier("snakeCaseJsonMapper")
     private final JsonMapper jsonMapper;
 
-    @Value("${divum-daemon.api-version}/minecraft-servers")
+    @Value("${divum-daemon.api-version}/minecraft-servers/")
     private String daemonEndpointAddress;
 
     @Value("${divum-daemon.api-scheme}")
@@ -175,6 +175,9 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
                         new UserNotFound("No user with the given username exists."));
 
         ServerMachine serverMachine = availableMachines.getFirst();
+
+        serverMachine.setFreeCpuCores(serverMachine.getFreeCpuCores() - requiredCpuCores);
+        serverMachine.setFreeRamMb(serverMachine.getFreeRamMb() - requiredRamMb);
 
         String registeredServerDomain = "";
 
