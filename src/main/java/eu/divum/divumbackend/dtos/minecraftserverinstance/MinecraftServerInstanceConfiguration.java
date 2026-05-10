@@ -8,7 +8,7 @@ import java.util.List;
 public class MinecraftServerInstanceConfiguration {
     private int memoryLimit;
 
-    private int cpuCoresLimit;
+    private float cpuCoresLimit;
 
     private boolean eula;
 
