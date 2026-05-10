@@ -9,34 +9,35 @@ http:
   body:
     type: json
     data: |-
-      { 
-        server_name: "MyAwesomeServer",
-        server_domain: "MyAwesomeServerDomain.divum.eu",
-        minecraft_server_config: {
+      {
+        "username": "dimitar",
+        "configuration": {
           // As per the official Minecraft server documentation (default values listed here)
-          "memory_limit": 2000,
-          "cpu_cores_limit": 2,
+          "memoryLimit": 2000,
+          "cpuCoresLimit": 2,
           "eula": true,
           "version": "latest",
-          "type": "vanilla",
+          "type": "VANILLA",
           "motd": "Brought to you by Divum. Enjoy!",
           "difficulty": "easy",
           "mode": "survival",
           "level": "world",
-          "online_mode": true,
-          "resource_pack": "",
-          "resource_pack_sha1": "",
-          "resource_pack_enforce": false,
-          "enable_whitelist": false,
+          "onlineMode": true,
+          "resourcePack": "",
+          "resourcePackSha1": "",
+          "resourcePackEnforce": false,
+          "enableWhitelist": false,
           "whitelist": [],
-          "override_whitelist": false,
-          "enable_rcon": true,
-          "rcon_password": "your_secure_password",
-          "broadcast_rcon_to_ops": false,
+          "overrideWhitelist": false,
+          "enableRcon": true,
+          "rconPassword": "your_secure_password",
+          "broadcastRconToOps": false,
           "ops": [],
-          "op_permission_level": 0,
+          "opPermissionLevel": 0,
           "seed": "",
-          "pvp": true
+          "pvp": true,
+          "serverName": "MyAwesomeServer",
+          "serverAddress": "dimitar.divum.eu"
         }
       }
   auth: inherit

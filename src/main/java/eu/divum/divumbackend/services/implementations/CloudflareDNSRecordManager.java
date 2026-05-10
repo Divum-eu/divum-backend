@@ -1,4 +1,4 @@
-package eu.divum.divumbackend.services;
+package eu.divum.divumbackend.services.implementations;
 
 import eu.divum.divumbackend.dtos.cloudflare.CloudflareDNSCreateResponse;
 import eu.divum.divumbackend.dtos.cloudflare.CloudflareDNSListResponse;
@@ -8,10 +8,12 @@ import eu.divum.divumbackend.exceptions.HTTPRequestException;
 
 import eu.divum.divumbackend.exceptions.cloudflare.CloudflareAPIException;
 
+import eu.divum.divumbackend.services.DNSRecordManager;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.commons.validator.routines.InetAddressValidator;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.stereotype.Service;
@@ -31,7 +33,8 @@ import java.net.http.HttpResponse;
 public class CloudflareDNSRecordManager implements DNSRecordManager {
     // Follows the documentation at: https://developers.cloudflare.com/api/resources/dns
 
-    private static final String API_URL = "https://api.cloudflare.com/client/v4/zones/%s/dns_records";
+    @Value("${cloudflare.api-url}")
+    private String apiUrl;
 
     @Value("${cloudflare.zone-id}")
     private String zoneId;
@@ -43,6 +46,8 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
     private String domain;
 
     private final JsonMapper jsonMapper;
+
+    @Qualifier("defaultHttpClient")
     private final HttpClient httpClient;
 
     @Override
@@ -53,7 +58,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
         if (!isValidDomain(domain) || isAlreadyRegistered(domain) != null) {
             throw new IllegalArgumentException("Invalid domain or already registered");
         }
-        String endpoint = String.format(API_URL, zoneId);
+        String endpoint = String.format(apiUrl, zoneId);
 
         String payload = jsonMapper.writeValueAsString(
                 // ttl = 0 so it sets to Auto
@@ -69,7 +74,6 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
 
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
 
             if (response.statusCode() != 200) {
                 throw new CloudflareAPIException("Cloudflare API exception");
@@ -91,7 +95,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
         // gets the DNS record ID to send it in the request url
         String DNSRecordID = isAlreadyRegistered(domain);
         if (DNSRecordID != null) {
-            String endpoint = String.format(API_URL, zoneId) + "/" + DNSRecordID;
+            String endpoint = String.format(apiUrl, zoneId) + "/" + DNSRecordID;
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(endpoint))
                     .header("Authorization", "Bearer " + apiToken)
@@ -144,7 +148,7 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
     private String isAlreadyRegistered(String domain) {
         // Returns the DNS record ID if registered, else returns null
 
-        String endpoint = String.format(API_URL, zoneId) + "?name.exact=" + domain;
+        String endpoint = String.format(apiUrl, zoneId) + "?name.exact=" + domain;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
@@ -170,3 +174,4 @@ public class CloudflareDNSRecordManager implements DNSRecordManager {
         }
     }
 }
+
