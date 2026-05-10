@@ -157,7 +157,7 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     @Override
     @Transactional
     public String create(MinecraftServerInstanceRequest request) {
-        int requiredCpuCores = request.configuration().getCpuCoresLimit();
+        float requiredCpuCores = request.configuration().getCpuCoresLimit();
         int requiredRamMb = request.configuration().getMemoryLimit();
 
         if (minecraftServerRepository.existsByAddress(request.configuration().getServerAddress())) {
