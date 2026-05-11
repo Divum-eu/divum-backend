@@ -61,7 +61,7 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     @Qualifier("snakeCaseJsonMapper")
     private final JsonMapper jsonMapper;
 
-    @Value("${divum-daemon.api-version}/minecraft-servers/")
+    @Value("${divum-daemon.api-version}/minecraft-servers")
     private String daemonEndpointAddress;
 
     @Value("${divum-daemon.api-scheme}")
@@ -154,7 +154,7 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
         MinecraftServerInstance serverInstance = minecraftServerRepository.getReferenceById(UUID.fromString(serverId));
 
         String daemonDeleteUrl = String.format(
-                daemonEndpointScheme + serverInstance.getServerMachine().getIp() + daemonEndpointAddress + "/%s/",
+                daemonEndpointScheme + serverInstance.getServerMachine().getIp() + daemonEndpointAddress + "/%s",
                 serverInstance.getDaemonId());
 
         HttpRequest instanceDeleteRequest = HttpRequest.newBuilder()
@@ -180,6 +180,12 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
             dnsRecordManager.create(serverInstance.getAddress(), serverInstance.getServerMachine().getIp());
             throw new HTTPRequestException();
         }
+
+        // Give the server machine it's resources back
+        ServerMachine serverMachine = serverInstance.getServerMachine();
+        serverMachine.setFreeCpuCores(serverMachine.getFreeCpuCores() + serverInstance.getConfiguration().getCpuCoresLimit());
+        serverMachine.setFreeRamMb(serverMachine.getFreeRamMb() + serverInstance.getConfiguration().getMemoryLimit());
+
         minecraftServerRepository.deleteById(UUID.fromString(serverId));
     }
 
