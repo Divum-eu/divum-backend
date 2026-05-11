@@ -151,6 +151,35 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
 
     @Override
     public void remove(String serverId) {
+        MinecraftServerInstance serverInstance = minecraftServerRepository.getReferenceById(UUID.fromString(serverId));
+
+        String daemonDeleteUrl = String.format(
+                daemonEndpointScheme + serverInstance.getServerMachine().getIp() + daemonEndpointAddress + "/%s/",
+                serverInstance.getDaemonId());
+
+        HttpRequest instanceDeleteRequest = HttpRequest.newBuilder()
+                .uri(URI.create(daemonDeleteUrl))
+                .DELETE()
+                .build();
+
+        // Delete the domain first, if it fails the server is not affected
+        dnsRecordManager.delete(serverInstance.getAddress());
+
+        try {
+            HttpResponse<Void> instanceDeleteResponse =
+                    httpClient.send(instanceDeleteRequest, HttpResponse.BodyHandlers.discarding());
+
+            if (instanceDeleteResponse.statusCode() != 204) {
+                // Recreate DNS record if server deletion failed
+                dnsRecordManager.create(serverInstance.getAddress(), serverInstance.getServerMachine().getIp());
+                throw new MinecraftServerInstanceDeleteFailed("Couldn't delete the Minecraft server instance.");
+            }
+
+        } catch (IOException | InterruptedException exception) {
+            // Recreate DNS record if server deletion failed
+            dnsRecordManager.create(serverInstance.getAddress(), serverInstance.getServerMachine().getIp());
+            throw new HTTPRequestException();
+        }
         minecraftServerRepository.deleteById(UUID.fromString(serverId));
     }
 
