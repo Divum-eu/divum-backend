@@ -1,46 +1,35 @@
 package eu.divum.divumbackend.services.implementations;
 
-import eu.divum.divumbackend.domain.User;
-import eu.divum.divumbackend.domain.ServerMachine;
 import eu.divum.divumbackend.domain.MinecraftServerInstance;
-
+import eu.divum.divumbackend.domain.ServerMachine;
+import eu.divum.divumbackend.domain.User;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceConfiguration;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceRequest;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceResponse;
-
+import eu.divum.divumbackend.exceptions.HTTPRequestException;
+import eu.divum.divumbackend.exceptions.cloudflare.CloudflareAPIException;
+import eu.divum.divumbackend.exceptions.minecraftserverinstance.*;
+import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
 import eu.divum.divumbackend.exceptions.servermachine.NotEnoughServerResources;
-import eu.divum.divumbackend.repositories.UserRepository;
-import eu.divum.divumbackend.repositories.ServerMachineRepository;
+import eu.divum.divumbackend.exceptions.user.UserNotFound;
+import eu.divum.divumbackend.mappers.minecraftserverinstance.MinecraftServerInstanceMapper;
 import eu.divum.divumbackend.repositories.MinecraftServerInstanceRepository;
-
+import eu.divum.divumbackend.repositories.ServerMachineRepository;
+import eu.divum.divumbackend.repositories.UserRepository;
 import eu.divum.divumbackend.services.DNSRecordManager;
 import eu.divum.divumbackend.services.MinecraftServerInstanceService;
-
-import eu.divum.divumbackend.mappers.minecraftserverinstance.MinecraftServerInstanceMapper;
-
-import eu.divum.divumbackend.exceptions.user.UserNotFound;
-import eu.divum.divumbackend.exceptions.HTTPRequestException;
-import eu.divum.divumbackend.exceptions.minecraftserverinstance.*;
-import eu.divum.divumbackend.exceptions.cloudflare.CloudflareAPIException;
-import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
-
 import jakarta.transaction.Transactional;
-
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Qualifier;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-
 import java.util.List;
 import java.util.UUID;
 
