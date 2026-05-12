@@ -259,7 +259,6 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
 
         } catch (IOException | InterruptedException | HTTPRequestException exception) {
             boolean _ = dnsRecordManager.delete(registeredServerDomain);
-
             throw new HTTPRequestException();
         }
     }
@@ -300,10 +299,12 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
             serverInstance.getConfiguration().setServerAddress(createdAddress);
         }
 
-        String daemonUpdateUrl = String.format("%s/%s/%s",
-                daemonEndpointScheme, daemonEndpointAddress, serverInstance.getDaemonId());
+        String daemonUpdateUrl = String.format("%s%s%s/%s",
+                daemonEndpointScheme, serverInstance.getServerMachine().getIp(), daemonEndpointAddress, serverInstance.getDaemonId());
+
         HttpRequest daemonUpdateRequest = HttpRequest.newBuilder()
                 .uri(URI.create(daemonUpdateUrl))
+                .header("Content-Type", "application/json")
                 // Passes the configuration as json
                 .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonMapper.writeValueAsString(request.configuration())))
                 .build();
