@@ -4,9 +4,11 @@ import eu.divum.divumbackend.domain.User;
 import eu.divum.divumbackend.domain.ServerMachine;
 import eu.divum.divumbackend.domain.MinecraftServerInstance;
 
+import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceConfiguration;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceRequest;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceResponse;
 
+import eu.divum.divumbackend.exceptions.servermachine.NotEnoughServerResources;
 import eu.divum.divumbackend.repositories.UserRepository;
 import eu.divum.divumbackend.repositories.ServerMachineRepository;
 import eu.divum.divumbackend.repositories.MinecraftServerInstanceRepository;
@@ -258,6 +260,72 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
         } catch (IOException | InterruptedException | HTTPRequestException exception) {
             boolean _ = dnsRecordManager.delete(registeredServerDomain);
 
+            throw new HTTPRequestException();
+        }
+    }
+
+    @Override
+    public MinecraftServerInstanceResponse update(String serverId, MinecraftServerInstanceRequest request) {
+        MinecraftServerInstance serverInstance = minecraftServerRepository.findById(UUID.fromString(serverId))
+                .orElseThrow(() -> new MinecraftServerInstanceNotFound("Minecraft server instance not found."));
+
+        MinecraftServerInstanceConfiguration oldConfiguration = serverInstance.getConfiguration();
+        MinecraftServerInstanceConfiguration newConfiguration = request.configuration();
+
+        // Check for request to change server resources
+        float oldCpuLimit = oldConfiguration.getCpuCoresLimit();
+        float newCpuLimit = newConfiguration.getCpuCoresLimit();
+        int oldMemoryLimit = oldConfiguration.getMemoryLimit();
+        int newMemoryLimit = newConfiguration.getMemoryLimit();
+        if (oldCpuLimit != newCpuLimit || oldMemoryLimit != newMemoryLimit) {
+            if (newCpuLimit > serverInstance.getServerMachine().getFreeCpuCores() + oldCpuLimit) {
+                throw new NotEnoughServerResources("Can't satisfy the given CPU cores.");
+            }
+            if (newMemoryLimit > serverInstance.getServerMachine().getFreeRamMb() + oldMemoryLimit) {
+                throw new NotEnoughServerResources("Can't satisfy the given memory limit.");
+            }
+
+            // set the new server limits
+            serverInstance.getConfiguration().setCpuCoresLimit(newCpuLimit);
+            serverInstance.getConfiguration().setMemoryLimit(newMemoryLimit);
+        }
+
+        // Check for server domain change
+        String oldAddress = oldConfiguration.getServerAddress();
+        String newAddress = newConfiguration.getServerAddress();
+        if (!oldAddress.equals(newAddress)) {
+            String createdAddress = dnsRecordManager.create(newAddress, serverInstance.getServerMachine().getIp());
+            dnsRecordManager.delete(oldAddress);
+            serverInstance.setAddress(createdAddress);
+            serverInstance.getConfiguration().setServerAddress(createdAddress);
+        }
+
+        String daemonUpdateUrl = String.format("%s/%s/%s",
+                daemonEndpointScheme, daemonEndpointAddress, serverInstance.getDaemonId());
+        HttpRequest daemonUpdateRequest = HttpRequest.newBuilder()
+                .uri(URI.create(daemonUpdateUrl))
+                // Passes the configuration as json
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonMapper.writeValueAsString(request.configuration())))
+                .build();
+
+        try {
+            HttpResponse<String> daemonUpdateResponse = httpClient.send(daemonUpdateRequest, HttpResponse.BodyHandlers.ofString());
+
+            if (daemonUpdateResponse.statusCode() != 204) {
+                // Recreate the dns record on fail
+                if (!oldAddress.equals(newAddress)) {
+                    dnsRecordManager.delete(newAddress);
+                    dnsRecordManager.create(oldAddress, serverInstance.getServerMachine().getIp());
+                }
+                throw new MinecraftServerInstanceUpdateFailed("Couldn't update Minecraft instance.");
+            }
+
+            // Save and return the new confiuration on successful update
+            serverInstance.setConfiguration(newConfiguration);
+            minecraftServerRepository.save(serverInstance);
+            return new MinecraftServerInstanceResponse(serverInstance.getId(), newConfiguration);
+
+        } catch (IOException | InterruptedException exception) {
             throw new HTTPRequestException();
         }
     }
