@@ -1,11 +1,11 @@
 info:
-  name: CreateMinecraftServer
+  name: UpdateMinecraftServer
   type: http
-  seq: 1
+  seq: 15
 
 http:
-  method: POST
-  url: "{{address}}/{{base_route}}/mc-server-instances"
+  method: PATCH
+  url: "{{address}}/{{base_route}}/mc-server-instances/334baeb1-6b55-4e35-bc5d-e71b586ea7fb"
   body:
     type: json
     data: |-
@@ -22,7 +22,7 @@ http:
           "difficulty": "easy",
           "mode": "survival",
           "level": "world",
-          "onlineMode": true,
+          "onlineMode": false,
           "resourcePack": "",
           "resourcePackSha1": "",
           "resourcePackEnforce": false,

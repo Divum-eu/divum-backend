@@ -5,7 +5,7 @@ info:
 
 http:
   method: DELETE
-  url: "{{address}}/{{base_route}}/minecraft-servers/{{minecraft_server_id}}"
+  url: "{{address}}/{{base_route}}/mc-server-instances/88cd9058-aef6-4710-8ca5-7b5962b32111"
   body:
     type: json
     data: ""
