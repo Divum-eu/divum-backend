@@ -68,7 +68,7 @@ public class MinecraftServerInstanceController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<MinecraftServerInstanceResponse> updateMCServerInstance(
-            String id,
+            @PathVariable String id,
             @Valid @RequestBody MinecraftServerInstanceRequest request
     ) {
         MinecraftServerInstanceResponse response = mcServerInstanceService.update(id, request);
