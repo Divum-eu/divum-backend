@@ -61,7 +61,7 @@ public class MinecraftServerInstanceController {
             UriComponentsBuilder uriBuilder
             ) {
         String serverInstanceId = mcServerInstanceService.create(request);
-        URI uri = uriBuilder.path("/api/v1/mc-server-instances/{id}").buildAndExpand(serverInstanceId).toUri();
+        URI uri = uriBuilder.path("/v1/mc-server-instances/{id}").buildAndExpand(serverInstanceId).toUri();
         return ResponseEntity.created(uri).body(serverInstanceId);
     }
 
