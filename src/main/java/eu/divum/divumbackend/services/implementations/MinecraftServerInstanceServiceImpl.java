@@ -142,7 +142,8 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
 
     @Override
     public void remove(String serverId) {
-        MinecraftServerInstance serverInstance = minecraftServerRepository.getReferenceById(UUID.fromString(serverId));
+        MinecraftServerInstance serverInstance = minecraftServerRepository.findById(UUID.fromString(serverId))
+                .orElseThrow(() -> new MinecraftServerInstanceNotFound("Couldn't find Minecraft instance with the given ID."));
 
         String daemonDeleteUrl = String.format(
                 daemonEndpointScheme + serverInstance.getServerMachine().getIp() + daemonEndpointAddress + "/%s",
