@@ -76,7 +76,7 @@ public class MinecraftServerInstanceController {
 
     @ExceptionHandler(HTTPRequestException.class)
     public ResponseEntity<ErrorDto> handleHTTPRequestException() {
-        return ResponseEntity.internalServerError().body(new ErrorDto("Something unexpected happened."));
+        return ResponseEntity.internalServerError().body(new ErrorDto("A call to an external API failed."));
     }
 
     @ExceptionHandler(MinecraftServerInstanceNotFound.class)
