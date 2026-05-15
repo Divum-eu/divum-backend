@@ -153,25 +153,24 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
                 .DELETE()
                 .build();
 
-        // Delete the domain first, if it fails the server is not affected
-        dnsRecordManager.delete(serverInstance.getAddress());
-
         try {
             HttpResponse<Void> instanceDeleteResponse =
                     httpClient.send(instanceDeleteRequest, HttpResponse.BodyHandlers.discarding());
 
             if (instanceDeleteResponse.statusCode() != 204) {
-                // Recreate DNS record if server deletion failed
-                dnsRecordManager.create(serverInstance.getAddress(), serverInstance.getServerMachine().getIp());
                 throw new MinecraftServerInstanceDeleteFailed("Couldn't delete the Minecraft server instance.");
             }
 
         } catch (IOException | InterruptedException exception) {
-            // Recreate DNS record if server deletion failed
-            dnsRecordManager.create(serverInstance.getAddress(), serverInstance.getServerMachine().getIp());
             throw new HTTPRequestException();
         }
 
+        try {
+            dnsRecordManager.delete(serverInstance.getAddress());
+        } catch (HTTPRequestException e) {
+            // TODO: log dangling domain
+            throw e;
+        }
         // Give the server machine it's resources back
         ServerMachine serverMachine = serverInstance.getServerMachine();
         serverMachine.setFreeCpuCores(serverMachine.getFreeCpuCores() + serverInstance.getConfiguration().getCpuCoresLimit());
