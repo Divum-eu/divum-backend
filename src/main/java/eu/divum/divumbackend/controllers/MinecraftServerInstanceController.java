@@ -25,14 +25,14 @@ public class MinecraftServerInstanceController {
     private final MinecraftServerInstanceServiceImpl mcServerInstanceService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<MinecraftServerInstanceResponse> getMCServerInstanceById(
+    public ResponseEntity<MinecraftServerInstanceResponse> getMinecraftServerInstanceById(
             @PathVariable String id
             ) {
         return ResponseEntity.ok(mcServerInstanceService.getById(id));
     }
 
     @PostMapping("/{id}/start")
-    public ResponseEntity<Void> startMCServerInstance(
+    public ResponseEntity<Void> startMinecraftServerInstance(
             @PathVariable String id
     ) {
         mcServerInstanceService.start(id);
@@ -40,7 +40,7 @@ public class MinecraftServerInstanceController {
     }
 
     @PostMapping("/{id}/stop")
-    public ResponseEntity<Void> stopMCServerInstance(
+    public ResponseEntity<Void> stopMinecraftServerInstance(
             @PathVariable String id
     ) {
         mcServerInstanceService.stop(id);
@@ -48,7 +48,7 @@ public class MinecraftServerInstanceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMCServerInstance(
+    public ResponseEntity<Void> deleteMinecraftServerInstance(
             @PathVariable String id
     ) {
         mcServerInstanceService.remove(id);
@@ -56,7 +56,7 @@ public class MinecraftServerInstanceController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createMCServerInstance(
+    public ResponseEntity<String> createMinecraftServerInstance(
             @Valid @RequestBody MinecraftServerInstanceRequest request,
             UriComponentsBuilder uriBuilder
             ) {
@@ -66,7 +66,7 @@ public class MinecraftServerInstanceController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<MinecraftServerInstanceResponse> updateMCServerInstance(
+    public ResponseEntity<MinecraftServerInstanceResponse> updateMinecraftServerInstance(
             @PathVariable String id,
             @Valid @RequestBody MinecraftServerInstanceRequest request
     ) {
