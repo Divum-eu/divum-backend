@@ -7,6 +7,7 @@ import eu.divum.divumbackend.exceptions.HTTPRequestException;
 import eu.divum.divumbackend.exceptions.minecraftserverinstance.*;
 import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
 import eu.divum.divumbackend.exceptions.servermachine.NotEnoughServerResources;
+import eu.divum.divumbackend.services.MinecraftServerInstanceService;
 import eu.divum.divumbackend.services.implementations.MinecraftServerInstanceServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class MinecraftServerInstanceController {
 
-    private final MinecraftServerInstanceServiceImpl mcServerInstanceService;
+    private final MinecraftServerInstanceService mcServerInstanceService;
 
     @GetMapping("/{id}")
     public ResponseEntity<MinecraftServerInstanceResponse> getMinecraftServerInstanceById(
@@ -61,7 +62,7 @@ public class MinecraftServerInstanceController {
             UriComponentsBuilder uriBuilder
             ) {
         String serverInstanceId = mcServerInstanceService.create(request);
-        URI uri = uriBuilder.path("/api/v1/mc-server-instances/{id}").buildAndExpand(serverInstanceId).toUri();
+        URI uri = uriBuilder.path("/v1/mc-server-instances/{id}").buildAndExpand(serverInstanceId).toUri();
         return ResponseEntity.created(uri).body(serverInstanceId);
     }
 
