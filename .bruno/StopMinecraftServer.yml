@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{address}}/{{base_route}}/mc-server-instances/8d110d61-4a6d-4090-b03b-edca190cebc3/stop"
+  url: "{{address}}/{{base_route}}/minecraft-servers/8d110d61-4a6d-4090-b03b-edca190cebc3/stop"
   body:
     type: json
     data: ""

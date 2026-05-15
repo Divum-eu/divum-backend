@@ -18,7 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/v1/mc-server-instances")
+@RequestMapping("/v1/minecraft-server")
 @RequiredArgsConstructor
 public class MinecraftServerInstanceController {
 
