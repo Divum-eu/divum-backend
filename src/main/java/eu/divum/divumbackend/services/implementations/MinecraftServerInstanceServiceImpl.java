@@ -171,6 +171,7 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
             // TODO: log dangling domain
             throw e;
         }
+
         // Give the server machine it's resources back
         ServerMachine serverMachine = serverInstance.getServerMachine();
         serverMachine.setFreeCpuCores(serverMachine.getFreeCpuCores() + serverInstance.getConfiguration().getCpuCoresLimit());
@@ -272,19 +273,15 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
                 throw new NotEnoughServerResources("Can't satisfy the given memory limit.");
             }
 
-            // set the new server limits
             serverInstance.getConfiguration().setCpuCoresLimit(newCpuLimit);
             serverInstance.getConfiguration().setMemoryLimit(newMemoryLimit);
         }
 
-        // Check for server domain change
         String oldAddress = oldConfiguration.getServerAddress();
-        String newAddress = newConfiguration.getServerAddress();
+        String newAddress = newConfiguration.getServerAddress().strip();
         if (!oldAddress.equals(newAddress)) {
-            String createdAddress = dnsRecordManager.create(newAddress, serverInstance.getServerMachine().getIp());
-            dnsRecordManager.delete(oldAddress);
-            serverInstance.setAddress(createdAddress);
-            serverInstance.getConfiguration().setServerAddress(createdAddress);
+            serverInstance.setAddress(newAddress);
+            serverInstance.getConfiguration().setServerAddress(newAddress);
         }
 
         String daemonUpdateUrl = String.format("%s%s%s/%s",
@@ -293,7 +290,6 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
         HttpRequest daemonUpdateRequest = HttpRequest.newBuilder()
                 .uri(URI.create(daemonUpdateUrl))
                 .header("Content-Type", "application/json")
-                // Passes the configuration as json
                 .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonMapper.writeValueAsString(request.configuration())))
                 .build();
 
@@ -301,15 +297,14 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
             HttpResponse<String> daemonUpdateResponse = httpClient.send(daemonUpdateRequest, HttpResponse.BodyHandlers.ofString());
 
             if (daemonUpdateResponse.statusCode() != 204) {
-                // Recreate the dns record on fail
-                if (!oldAddress.equals(newAddress)) {
-                    dnsRecordManager.delete(newAddress);
-                    dnsRecordManager.create(oldAddress, serverInstance.getServerMachine().getIp());
-                }
                 throw new MinecraftServerInstanceUpdateFailed("Couldn't update Minecraft instance.");
             }
 
-            // Save and return the new confiuration on successful update
+            if (!oldAddress.equals(newAddress)) {
+                dnsRecordManager.create(newAddress, serverInstance.getServerMachine().getIp());
+                dnsRecordManager.delete(oldAddress);
+            }
+
             serverInstance.setConfiguration(newConfiguration);
             minecraftServerRepository.save(serverInstance);
             return new MinecraftServerInstanceResponse(serverInstance.getId(), newConfiguration);
