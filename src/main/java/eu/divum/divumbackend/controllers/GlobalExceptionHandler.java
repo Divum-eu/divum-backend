@@ -13,4 +13,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDto> handleUserNotFoundException() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDto("User not found."));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDto> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage().isBlank() ? "Invalid request body." : e.getMessage()));
+    }
 }
