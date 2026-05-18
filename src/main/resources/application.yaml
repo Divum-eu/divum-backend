@@ -16,6 +16,11 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    clean-disabled: true
+    default-schema: divum
 
   jpa:
     hibernate:
@@ -28,6 +33,7 @@ spring:
         format_sql: true
         default_schema: divum
 
+
 cloudflare:
   api-url: "https://api.cloudflare.com/client/v4/zones/%s/dns_records"
   zone-id: ${CLOUDFLARE_DOMAIN_ZONE_ID}
@@ -36,3 +42,7 @@ cloudflare:
 divum-daemon:
   api-scheme: https://
   api-version: /api/v1
+
+server:
+  servlet:
+    context-path: /api

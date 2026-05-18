@@ -17,7 +17,6 @@ import java.util.UUID;
 @Entity
 @Table(
         name = "server_instances",
-        uniqueConstraints = @UniqueConstraint(columnNames = "address"),
         schema = "divum"
 )
 @SQLRestriction("deleted_on IS NULL")

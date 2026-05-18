@@ -1,44 +1,35 @@
 package eu.divum.divumbackend.services.implementations;
 
-import eu.divum.divumbackend.domain.User;
-import eu.divum.divumbackend.domain.ServerMachine;
 import eu.divum.divumbackend.domain.MinecraftServerInstance;
-
+import eu.divum.divumbackend.domain.ServerMachine;
+import eu.divum.divumbackend.domain.User;
+import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceConfiguration;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceRequest;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceResponse;
-
-import eu.divum.divumbackend.repositories.UserRepository;
-import eu.divum.divumbackend.repositories.ServerMachineRepository;
+import eu.divum.divumbackend.exceptions.HTTPRequestException;
+import eu.divum.divumbackend.exceptions.cloudflare.CloudflareAPIException;
+import eu.divum.divumbackend.exceptions.minecraftserverinstance.*;
+import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
+import eu.divum.divumbackend.exceptions.servermachine.NotEnoughServerResources;
+import eu.divum.divumbackend.exceptions.user.UserNotFound;
+import eu.divum.divumbackend.mappers.minecraftserverinstance.MinecraftServerInstanceMapper;
 import eu.divum.divumbackend.repositories.MinecraftServerInstanceRepository;
-
+import eu.divum.divumbackend.repositories.ServerMachineRepository;
+import eu.divum.divumbackend.repositories.UserRepository;
 import eu.divum.divumbackend.services.DNSRecordManager;
 import eu.divum.divumbackend.services.MinecraftServerInstanceService;
-
-import eu.divum.divumbackend.mappers.minecraftserverinstance.MinecraftServerInstanceMapper;
-
-import eu.divum.divumbackend.exceptions.user.UserNotFound;
-import eu.divum.divumbackend.exceptions.HTTPRequestException;
-import eu.divum.divumbackend.exceptions.minecraftserverinstance.*;
-import eu.divum.divumbackend.exceptions.cloudflare.CloudflareAPIException;
-import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
-
 import jakarta.transaction.Transactional;
-
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Qualifier;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -61,7 +52,7 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     @Qualifier("snakeCaseJsonMapper")
     private final JsonMapper jsonMapper;
 
-    @Value("${divum-daemon.api-version}/minecraft-servers/")
+    @Value("${divum-daemon.api-version}/minecraft-servers")
     private String daemonEndpointAddress;
 
     @Value("${divum-daemon.api-scheme}")
@@ -151,6 +142,42 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
 
     @Override
     public void remove(String serverId) {
+        MinecraftServerInstance serverInstance = minecraftServerRepository.findById(UUID.fromString(serverId))
+                .orElseThrow(() -> new MinecraftServerInstanceNotFound("Couldn't find Minecraft instance with the given ID."));
+
+        String daemonDeleteUrl = String.format(
+                daemonEndpointScheme + serverInstance.getServerMachine().getIp() + daemonEndpointAddress + "/%s",
+                serverInstance.getDaemonId());
+
+        HttpRequest instanceDeleteRequest = HttpRequest.newBuilder()
+                .uri(URI.create(daemonDeleteUrl))
+                .DELETE()
+                .build();
+
+        try {
+            HttpResponse<Void> instanceDeleteResponse =
+                    httpClient.send(instanceDeleteRequest, HttpResponse.BodyHandlers.discarding());
+
+            if (instanceDeleteResponse.statusCode() != 204) {
+                throw new MinecraftServerInstanceDeleteFailed("Couldn't delete the Minecraft server instance.");
+            }
+
+        } catch (IOException | InterruptedException exception) {
+            throw new HTTPRequestException();
+        }
+
+        try {
+            dnsRecordManager.delete(serverInstance.getAddress());
+        } catch (HTTPRequestException e) {
+            // TODO: log dangling domain
+            throw e;
+        }
+
+        // Give the server machine it's resources back
+        ServerMachine serverMachine = serverInstance.getServerMachine();
+        serverMachine.setFreeCpuCores(serverMachine.getFreeCpuCores() + serverInstance.getConfiguration().getCpuCoresLimit());
+        serverMachine.setFreeRamMb(serverMachine.getFreeRamMb() + serverInstance.getConfiguration().getMemoryLimit());
+
         minecraftServerRepository.deleteById(UUID.fromString(serverId));
     }
 
@@ -222,7 +249,68 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
 
         } catch (IOException | InterruptedException | HTTPRequestException exception) {
             boolean _ = dnsRecordManager.delete(registeredServerDomain);
+            throw new HTTPRequestException();
+        }
+    }
 
+    @Override
+    public MinecraftServerInstanceResponse update(String serverId, MinecraftServerInstanceRequest request) {
+        MinecraftServerInstance serverInstance = minecraftServerRepository.findById(UUID.fromString(serverId))
+                .orElseThrow(() -> new MinecraftServerInstanceNotFound("Minecraft server instance not found."));
+
+        MinecraftServerInstanceConfiguration oldConfiguration = serverInstance.getConfiguration();
+        MinecraftServerInstanceConfiguration newConfiguration = request.configuration();
+
+        // Check for request to change server resources
+        float oldCpuLimit = oldConfiguration.getCpuCoresLimit();
+        float newCpuLimit = newConfiguration.getCpuCoresLimit();
+        int oldMemoryLimit = oldConfiguration.getMemoryLimit();
+        int newMemoryLimit = newConfiguration.getMemoryLimit();
+        if (oldCpuLimit != newCpuLimit || oldMemoryLimit != newMemoryLimit) {
+            if (newCpuLimit > serverInstance.getServerMachine().getFreeCpuCores() + oldCpuLimit) {
+                throw new NotEnoughServerResources("Can't satisfy the given CPU cores.");
+            }
+            if (newMemoryLimit > serverInstance.getServerMachine().getFreeRamMb() + oldMemoryLimit) {
+                throw new NotEnoughServerResources("Can't satisfy the given memory limit.");
+            }
+
+            serverInstance.getConfiguration().setCpuCoresLimit(newCpuLimit);
+            serverInstance.getConfiguration().setMemoryLimit(newMemoryLimit);
+        }
+
+        String oldAddress = oldConfiguration.getServerAddress();
+        String newAddress = newConfiguration.getServerAddress().strip();
+        if (!oldAddress.equals(newAddress)) {
+            serverInstance.setAddress(newAddress);
+            serverInstance.getConfiguration().setServerAddress(newAddress);
+        }
+
+        String daemonUpdateUrl = String.format("%s%s%s/%s",
+                daemonEndpointScheme, serverInstance.getServerMachine().getIp(), daemonEndpointAddress, serverInstance.getDaemonId());
+
+        HttpRequest daemonUpdateRequest = HttpRequest.newBuilder()
+                .uri(URI.create(daemonUpdateUrl))
+                .header("Content-Type", "application/json")
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonMapper.writeValueAsString(request.configuration())))
+                .build();
+
+        try {
+            HttpResponse<String> daemonUpdateResponse = httpClient.send(daemonUpdateRequest, HttpResponse.BodyHandlers.ofString());
+
+            if (daemonUpdateResponse.statusCode() != 204) {
+                throw new MinecraftServerInstanceUpdateFailed("Couldn't update Minecraft instance.");
+            }
+
+            if (!oldAddress.equals(newAddress)) {
+                dnsRecordManager.create(newAddress, serverInstance.getServerMachine().getIp());
+                dnsRecordManager.delete(oldAddress);
+            }
+
+            serverInstance.setConfiguration(newConfiguration);
+            minecraftServerRepository.save(serverInstance);
+            return new MinecraftServerInstanceResponse(serverInstance.getId(), newConfiguration);
+
+        } catch (IOException | InterruptedException exception) {
             throw new HTTPRequestException();
         }
     }

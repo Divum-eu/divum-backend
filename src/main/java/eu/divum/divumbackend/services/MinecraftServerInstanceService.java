@@ -16,4 +16,6 @@ public interface MinecraftServerInstanceService {
     void remove(String serverId);
 
     String create(MinecraftServerInstanceRequest request);
+
+    MinecraftServerInstanceResponse update(String serverId, MinecraftServerInstanceRequest request);
 }

@@ -32,9 +32,7 @@ create table if not exists divum.server_instances
 (
     id                uuid default uuidv4()       not null
         primary key,
-    address           varchar(50)                 not null
-        constraint uk_server_instances_address
-            unique,
+    address           varchar(50)                 not null,
     created_on        timestamp(6) with time zone not null,
     deleted_on        timestamp(6) with time zone,
     name              varchar(50)                 not null,
