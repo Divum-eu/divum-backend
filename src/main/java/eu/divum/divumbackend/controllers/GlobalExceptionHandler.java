@@ -1,6 +1,5 @@
 package eu.divum.divumbackend.controllers;
 
-import eu.divum.divumbackend.dtos.ErrorDto;
 import eu.divum.divumbackend.exceptions.HTTPRequestException;
 import eu.divum.divumbackend.exceptions.minecraftserverinstance.*;
 import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
@@ -8,23 +7,20 @@ import eu.divum.divumbackend.exceptions.servermachine.NotEnoughServerResources;
 import eu.divum.divumbackend.exceptions.user.UserNotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.net.URI;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserNotFound.class)
-    public ResponseEntity<ErrorDto> handleUserNotFoundException() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDto("User not found."));
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorDto> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage().isBlank() ? "Invalid request body." : e.getMessage()));
+    public ProblemDetail handleUserNotFoundException(UserNotFound ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage()
+        );
+        problemDetail.setTitle("User not found.");
+        return problemDetail;
     }
 
     @ExceptionHandler(HTTPRequestException.class)
