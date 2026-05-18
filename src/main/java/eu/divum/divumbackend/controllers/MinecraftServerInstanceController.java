@@ -19,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/v1/minecraft-server")
+@RequestMapping("/v1/minecraft-servers")
 @RequiredArgsConstructor
 public class MinecraftServerInstanceController {
 
@@ -62,7 +62,7 @@ public class MinecraftServerInstanceController {
             UriComponentsBuilder uriBuilder
             ) {
         String serverInstanceId = mcServerInstanceService.create(request);
-        URI uri = uriBuilder.path("/v1/mc-server-instances/{id}").buildAndExpand(serverInstanceId).toUri();
+        URI uri = uriBuilder.path("/v1/minecraft-servers/{id}").buildAndExpand(serverInstanceId).toUri();
         return ResponseEntity.created(uri).body(serverInstanceId);
     }
 
