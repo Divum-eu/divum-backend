@@ -12,15 +12,14 @@ http:
       {
         "username": "dimitar",
         "configuration": {
-          // As per the official Minecraft server documentation (default values listed here)
           "memoryLimit": 2000,
-          "cpuCoresLimit": 2,
+          "cpuCoresLimit": 3,
           "eula": true,
           "version": "latest",
           "type": "VANILLA",
           "motd": "Brought to you by Divum. Enjoy!",
-          "difficulty": "easy",
-          "mode": "survival",
+          "difficulty": "EASY",
+          "mode": "SURVIVAL",
           "level": "world",
           "onlineMode": true,
           "resourcePack": "",
@@ -37,7 +36,7 @@ http:
           "seed": "",
           "pvp": true,
           "serverName": "MyAwesomeServer",
-          "serverAddress": "mitko.divum.eu"
+          "serverAddress": "test.divum.eu"
         }
       }
   auth: inherit

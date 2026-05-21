@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import tools.jackson.databind.exc.InvalidFormatException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -146,5 +150,57 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         problemDetail.setProperty("invalid_fields", fieldErrors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request
+    ) {
+        if (ex.getCause() instanceof InvalidFormatException invalidFormatException) {
+            if (invalidFormatException.getTargetType() != null && invalidFormatException.getTargetType().isEnum()) {
+                String fieldPath = invalidFormatException.getPath().stream()
+                        .map(ref -> {
+                            System.out.println(ref.getPropertyName());
+                            System.out.println(ref.getIndex());
+                            if (ref.getPropertyName() != null) {
+                                return ref.getPropertyName();
+                            }
+                            else if (ref.getIndex() >= 0) {
+                                return "[" + ref.getIndex() + "]";
+                            }
+                            return "";
+                        })
+                        .filter(name -> !name.isEmpty())
+                        .collect(Collectors.joining("."));
+
+                System.out.println(fieldPath);
+                fieldPath = fieldPath.replace(".[", "[");
+
+                Object[] enumConstants = invalidFormatException.getTargetType().getEnumConstants();
+                String allowedValues = Arrays.stream(enumConstants)
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", "));
+
+                String message = String.format("'%s' is not recognised. Allowed values: [%s]",
+                        invalidFormatException.getValue(), allowedValues);
+
+                ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalid request body."
+                );
+                problemDetail.setTitle("Validation Error");
+
+                Map<String, String> fieldErrors = new HashMap<>();
+                fieldErrors.put(fieldPath, message);
+
+                problemDetail.setProperty("invalid_fields", fieldErrors);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
+            }
+        }
+
+        return super.handleHttpMessageNotReadable(ex, headers, status, request);
     }
 }
