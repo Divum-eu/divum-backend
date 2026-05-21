@@ -13,62 +13,62 @@ public class MinecraftServerInstanceConfiguration {
     @Min(value = 512, message = "Minimum RAM is 512 MB.")
     @Max(value = 24576, message = "Maximum RAM is 24576 MB.")
     @NotNull(message = "Memory limit is required.")
-    private int memoryLimit;
+    private Integer memoryLimit;
 
     @DecimalMin(value = "0.5", message = "Minimum of 0.5 CPU cores is required.")
     @DecimalMax(value = "8", message = "Maximum of 8 CPU cores is allowed.")
     @NotNull(message = "CPU cores limit is required.")
-    private float cpuCoresLimit;
+    private Float cpuCoresLimit;
 
-    @AssertTrue
+    @AssertTrue(message = "Accepting the EULA is required.")
     @NotNull(message = "Accepting the EULA is required.")
-    private boolean eula;
+    private Boolean eula;
 
     @NotBlank(message = "Server version is required.")
     private String version;
 
-    @NotBlank(message = "Server type is required.")
+    @NotNull(message = "Server type is required.")
     private MinecraftServerType type;
 
     private String motd;
 
-    @NotBlank(message = "Must specify difficulty")
+    @NotNull(message = "Must specify difficulty")
     private MinecraftServerDifficulty difficulty;
 
-    @NotBlank(message = "Server mode is required.")
+    @NotNull(message = "Server mode is required.")
     private MinecraftServerMode mode;
 
     private String level;
 
     @NotNull(message = "Must specify online mode.")
-    private boolean onlineMode;
+    private Boolean onlineMode;
 
     private String resourcePack;
 
     private String resourcePackSha1;
 
-    private boolean resourcePackEnforce;
+    private Boolean resourcePackEnforce;
 
-    private boolean enableWhitelist;
+    private Boolean enableWhitelist;
 
     private List<String> whitelist;
 
-    private boolean overrideWhitelist;
+    private Boolean overrideWhitelist;
 
-    private boolean enableRcon;
+    private Boolean enableRcon;
 
     @NotBlank(message = "Server RCON password is required.")
     private String rconPassword;
 
-    private boolean broadcastRconToOps;
+    private Boolean broadcastRconToOps;
 
     private List<String> ops;
 
-    private int opPermissionLevel;
+    private Integer opPermissionLevel;
 
     private String seed;
 
-    private boolean pvp;
+    private Boolean pvp;
 
     private String serverName;
 
