@@ -27,14 +27,14 @@ public class MinecraftServerInstanceController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MinecraftServerInstanceResponse> getMinecraftServerInstanceById(
-            @PathVariable String id
+            @PathVariable("id") String id
             ) {
         return ResponseEntity.ok(mcServerInstanceService.getById(id));
     }
 
     @PostMapping("/{id}/start")
     public ResponseEntity<Void> startMinecraftServerInstance(
-            @PathVariable String id
+            @PathVariable("id") String id
     ) {
         mcServerInstanceService.start(id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
@@ -42,7 +42,7 @@ public class MinecraftServerInstanceController {
 
     @PostMapping("/{id}/stop")
     public ResponseEntity<Void> stopMinecraftServerInstance(
-            @PathVariable String id
+            @PathVariable("id") String id
     ) {
         mcServerInstanceService.stop(id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
@@ -50,7 +50,7 @@ public class MinecraftServerInstanceController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMinecraftServerInstance(
-            @PathVariable String id
+            @PathVariable("id") String id
     ) {
         mcServerInstanceService.remove(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -68,7 +68,7 @@ public class MinecraftServerInstanceController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<MinecraftServerInstanceResponse> updateMinecraftServerInstance(
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @Valid @RequestBody MinecraftServerInstanceRequest request
     ) {
         MinecraftServerInstanceResponse response = mcServerInstanceService.update(id, request);
