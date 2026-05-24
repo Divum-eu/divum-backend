@@ -30,15 +30,15 @@ public class MinecraftServerInstanceConfiguration {
     @NotNull(message = "Server type is required.")
     private MinecraftServerType type;
 
-    private String motd;
+    private String motd = "Brought to you by Divum.eu!";
 
-    @NotNull(message = "Must specify difficulty")
+    @NotNull(message = "Difficulty is required.")
     private MinecraftServerDifficulty difficulty;
 
     @NotNull(message = "Server mode is required.")
     private MinecraftServerMode mode;
 
-    private String level;
+    private String level = "world";
 
     @NotNull(message = "Must specify online mode.")
     private Boolean onlineMode;
@@ -47,20 +47,20 @@ public class MinecraftServerInstanceConfiguration {
 
     private String resourcePackSha1;
 
-    private Boolean resourcePackEnforce;
+    private Boolean resourcePackEnforce = Boolean.FALSE;
 
-    private Boolean enableWhitelist;
+    private Boolean enableWhitelist = Boolean.FALSE;
 
     private List<String> whitelist;
 
-    private Boolean overrideWhitelist;
+    private Boolean overrideWhitelist = Boolean.FALSE;
 
-    private Boolean enableRcon;
+    private Boolean enableRcon = Boolean.FALSE;
 
     @NotBlank(message = "Server RCON password is required.")
     private String rconPassword;
 
-    private Boolean broadcastRconToOps;
+    private Boolean broadcastRconToOps = Boolean.FALSE;
 
     private List<String> ops;
 

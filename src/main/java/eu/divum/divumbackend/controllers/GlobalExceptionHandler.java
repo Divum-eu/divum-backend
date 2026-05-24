@@ -83,7 +83,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MinecraftServerInstanceWithSameAddressExists.class)
     public ProblemDetail handleMinecraftServerInstanceWithSameAddressExists(MinecraftServerInstanceWithSameAddressExists ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.SERVICE_UNAVAILABLE,
+                HttpStatus.BAD_REQUEST,
                 ex.getMessage()
         );
         problemDetail.setTitle("Minecraft server instance with the same address exists.");
@@ -113,7 +113,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NoAvailableServerMachines.class)
     public ProblemDetail handleNoAvailableServerMachines(NoAvailableServerMachines ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.SERVICE_UNAVAILABLE,
+                HttpStatus.BAD_REQUEST,
                 ex.getMessage()
         );
         problemDetail.setTitle("No server machines for the given RAM and CPU requirements are available.");
@@ -123,7 +123,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NotEnoughServerResources.class)
     public ProblemDetail handleNotEnoughServerResources(NotEnoughServerResources ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.SERVICE_UNAVAILABLE,
+                HttpStatus.BAD_REQUEST,
                 ex.getMessage()
         );
         problemDetail.setTitle("Not enough server resources for the given RAM and CPU requirements are available.");
@@ -163,8 +163,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             if (invalidFormatException.getTargetType() != null && invalidFormatException.getTargetType().isEnum()) {
                 String fieldPath = invalidFormatException.getPath().stream()
                         .map(ref -> {
-                            System.out.println(ref.getPropertyName());
-                            System.out.println(ref.getIndex());
                             if (ref.getPropertyName() != null) {
                                 return ref.getPropertyName();
                             }
@@ -176,7 +174,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .filter(name -> !name.isEmpty())
                         .collect(Collectors.joining("."));
 
-                System.out.println(fieldPath);
                 fieldPath = fieldPath.replace(".[", "[");
 
                 Object[] enumConstants = invalidFormatException.getTargetType().getEnumConstants();
