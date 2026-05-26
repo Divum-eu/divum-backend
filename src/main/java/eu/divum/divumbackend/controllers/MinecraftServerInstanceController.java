@@ -1,14 +1,8 @@
 package eu.divum.divumbackend.controllers;
 
-import eu.divum.divumbackend.dtos.ErrorDto;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceRequest;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceResponse;
-import eu.divum.divumbackend.exceptions.HTTPRequestException;
-import eu.divum.divumbackend.exceptions.minecraftserverinstance.*;
-import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
-import eu.divum.divumbackend.exceptions.servermachine.NotEnoughServerResources;
 import eu.divum.divumbackend.services.MinecraftServerInstanceService;
-import eu.divum.divumbackend.services.implementations.MinecraftServerInstanceServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -73,55 +67,5 @@ public class MinecraftServerInstanceController {
     ) {
         MinecraftServerInstanceResponse response = mcServerInstanceService.update(id, request);
         return ResponseEntity.accepted().body(response);
-    }
-
-    @ExceptionHandler(HTTPRequestException.class)
-    public ResponseEntity<ErrorDto> handleHTTPRequestException() {
-        return ResponseEntity.internalServerError().body(new ErrorDto("A call to an external API failed."));
-    }
-
-    @ExceptionHandler(MinecraftServerInstanceNotFound.class)
-    public ResponseEntity<ErrorDto> handleMinecraftServerInstanceNotFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDto("Minecraft server instance not found."));
-    }
-
-    @ExceptionHandler(MinecraftServerInstanceStartFailed.class)
-    public ResponseEntity<ErrorDto> handleMinecraftServerInstanceStartFailed() {
-        return ResponseEntity.internalServerError().body(new ErrorDto("Couldn't start Minecraft server instance."));
-    }
-
-    @ExceptionHandler(MinecraftServerInstanceStopFailed.class)
-    public ResponseEntity<ErrorDto> handleMinecraftServerInstanceStopFailed() {
-        return ResponseEntity.internalServerError().body(new ErrorDto("Couldn't stop Minecraft server instance."));
-    }
-
-    @ExceptionHandler(MinecraftServerInstanceDeleteFailed.class)
-    public ResponseEntity<ErrorDto> handleMinecraftServerInstanceDeleteFailed() {
-        return ResponseEntity.internalServerError().body(new ErrorDto("Couldn't delete Minecraft server instance."));
-    }
-
-    @ExceptionHandler(MinecraftServerInstanceWithSameAddressExists.class)
-    public ResponseEntity<ErrorDto> handleMinecraftServerInstanceWithSameAddressExistsException(MinecraftServerInstanceWithSameAddressExists e) {
-        return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage().isBlank() ? "A Minecraft server instance with the given address already exists." : e.getMessage()));
-    }
-
-    @ExceptionHandler(NoAvailableServerMachines.class)
-    public ResponseEntity<ErrorDto> handleNoAvailableServerMachinesException(NoAvailableServerMachines e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDto(e.getMessage().isBlank() ? "No server machines for the given RAM and CPU requirements are available." : e.getMessage()));
-    }
-
-    @ExceptionHandler(MinecraftServerInstanceCreationFailed.class)
-    public ResponseEntity<ErrorDto> handleMinecraftServerInstanceCreationFailed(MinecraftServerInstanceCreationFailed e) {
-        return ResponseEntity.internalServerError().body(new ErrorDto(e.getMessage().isBlank() ? "Minecraft server instance creation failed." : e.getMessage()));
-    }
-
-    @ExceptionHandler(NotEnoughServerResources.class)
-    public ResponseEntity<ErrorDto> handleNotEnoughServerResources(NotEnoughServerResources e) {
-        return ResponseEntity.badRequest().body(new ErrorDto(e.getMessage().isBlank() ? "Not enough server resources to satisfy request." : e.getMessage()));
-    }
-
-    @ExceptionHandler(MinecraftServerInstanceUpdateFailed.class)
-    public ResponseEntity<ErrorDto> handleMinecraftServerInstanceUpdateFailed(MinecraftServerInstanceUpdateFailed e) {
-        return ResponseEntity.internalServerError().body(new ErrorDto(e.getMessage().isBlank() ? "Couldn't update Minecraft instance.": e.getMessage()));
     }
 }

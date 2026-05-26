@@ -8,6 +8,9 @@ spring:
     name: divum-backend
   config:
     import: optional:file:.env[.properties]
+  mvc:
+    problemdetails:
+      enabled: true
   threads:
     virtual:
       enabled: true
