@@ -96,7 +96,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.SERVICE_UNAVAILABLE,
                 ex.getMessage()
         );
-        problemDetail.setTitle("Couldn't create Minecraft instance.");
+        problemDetail.setTitle("Couldn't create Minecraft server instance.");
         return problemDetail;
     }
 
@@ -106,7 +106,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.SERVICE_UNAVAILABLE,
                 ex.getMessage()
         );
-        problemDetail.setTitle("Couldn't update Minecraft instance.");
+        problemDetail.setTitle("Couldn't update Minecraft server instance.");
         return problemDetail;
     }
 
