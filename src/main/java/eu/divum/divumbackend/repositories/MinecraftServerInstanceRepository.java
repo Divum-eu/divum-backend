@@ -2,6 +2,10 @@ package eu.divum.divumbackend.repositories;
 
 import eu.divum.divumbackend.domain.MinecraftServerInstance;
 
+import eu.divum.divumbackend.dtos.minecraftserverinstance.DaemonConnectionInfo;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,4 +17,10 @@ public interface MinecraftServerInstanceRepository extends JpaRepository<Minecra
     Optional<MinecraftServerInstance> findByAddress(String address);
 
     boolean existsByAddress(String address);
+
+    @Query("SELECT new eu.divum.divumbackend.dtos.minecraftserverinstance.DaemonConnectionInfo(sm.ip, msi.daemonId) " +
+            "FROM MinecraftServerInstance msi " +
+            "JOIN msi.serverMachine sm " +
+            "WHERE msi.id = :instanceId")
+    Optional<DaemonConnectionInfo> findDaemonConnectionInfoById(@Param("instanceId") UUID instanceId);
 }
