@@ -1,4 +1,4 @@
-name: build Java with Maven (DEV)
+name: build (dev)
 
 on:
   push:
