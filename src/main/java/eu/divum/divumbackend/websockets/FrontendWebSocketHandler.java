@@ -42,7 +42,7 @@ public class FrontendWebSocketHandler extends TextWebSocketHandler {
             daemonConnectionManager.connectIfNeeded(daemonUrl, instanceId);
             subscriptionManager.addSubscriber(instanceId, daemonUrl, session);
         } catch (Exception e) {
-            closeQuietly(session, CloseStatus.BAD_DATA);
+            closeQuietly(session, CloseStatus.POLICY_VIOLATION);
         }
     }
 
