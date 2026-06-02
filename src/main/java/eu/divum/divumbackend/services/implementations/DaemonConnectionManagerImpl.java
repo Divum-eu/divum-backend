@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
@@ -26,7 +27,7 @@ public class DaemonConnectionManagerImpl implements DaemonConnectionManager {
                         subscriptionManager, this, url, instanceId
                 );
 
-                return client.execute(handler, url).get();
+                return client.execute(handler, url).get(10, TimeUnit.SECONDS);
             } catch (Exception e) {
                 throw new DaemonConnectionException();
             }
