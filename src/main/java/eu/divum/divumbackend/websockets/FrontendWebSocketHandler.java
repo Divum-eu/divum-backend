@@ -18,6 +18,9 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 @Component
 public class FrontendWebSocketHandler extends TextWebSocketHandler {
 
+    @Value("${divum-daemon.ws-scheme}")
+    private String daemonWsScheme;
+
     @Value("${divum-daemon.api-version}/minecraft-servers")
     private String daemonEndpointAddress;
 
@@ -35,7 +38,7 @@ public class FrontendWebSocketHandler extends TextWebSocketHandler {
 
         try {
             DaemonConnectionInfo connectionInfo = instanceService.getDaemonConnectionInfoById(instanceId);
-            String daemonUrl = "ws://" + connectionInfo.serverIp() + daemonEndpointAddress + "/" + connectionInfo.daemonId() + "/status/ws";
+            String daemonUrl = daemonWsScheme + connectionInfo.serverIp() + daemonEndpointAddress + "/" + connectionInfo.daemonId() + "/status/ws";
 
             session.getAttributes().put("daemonUrl", daemonUrl); // Used when closing the session
 
