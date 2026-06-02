@@ -20,7 +20,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(frontendHandler, "/v1/minecraft-servers/*/status")
+        registry.addHandler(frontendHandler, "/v1/minecraft-servers/*/status/ws")
                 .setAllowedOrigins(allowedOrigins); // TODO: Configure CORS properly for production
     }
 }
