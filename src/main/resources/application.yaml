@@ -2,7 +2,7 @@ app:
   domain: ${DOMAIN}
 
 cors:
-  allowed-origins: divum.eu
+  allowed-origins: "https://divum.eu"
 
 spring:
   profiles:
