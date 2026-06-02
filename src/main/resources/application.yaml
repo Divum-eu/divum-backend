@@ -36,6 +36,10 @@ spring:
         format_sql: true
         default_schema: divum
 
+jwt:
+  secret: Gx5oZJm3gOYvPmOm/Rk2iE1Y0Vp1H3uzV1WlFokmAEw=
+  access-token-expiration: 300 # seconds
+  refresh-token-expiration: 3600 # seconds
 
 cloudflare:
   api-url: "https://api.cloudflare.com/client/v4/zones/%s/dns_records"
