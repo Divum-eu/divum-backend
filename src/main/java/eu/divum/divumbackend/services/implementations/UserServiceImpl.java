@@ -2,10 +2,10 @@ package eu.divum.divumbackend.services.implementations;
 
 import eu.divum.divumbackend.exceptions.user.UserNotFound;
 import eu.divum.divumbackend.repositories.UserRepository;
+import eu.divum.divumbackend.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import java.util.Collections;
 
 @RequiredArgsConstructor
 @Service
-public class UserServiceImpl implements UserDetailsService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
