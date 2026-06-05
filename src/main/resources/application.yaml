@@ -36,8 +36,11 @@ spring:
         format_sql: true
         default_schema: divum
 
+cors:
+  allowed-origins: "http://localhost:4200"
+
 jwt:
-  secret: Gx5oZJm3gOYvPmOm/Rk2iE1Y0Vp1H3uzV1WlFokmAEw=
+  secret: ${JWT_SECRET}
   access-token-expiration: 300 # seconds
   refresh-token-expiration: 3600 # seconds
 
