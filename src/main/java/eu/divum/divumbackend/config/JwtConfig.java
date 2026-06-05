@@ -1,6 +1,7 @@
 package eu.divum.divumbackend.config;
 
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,10 @@ public class JwtConfig {
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
-    public SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+    private SecretKey secretKey;
+
+    @PostConstruct
+    private void init() {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
 }
