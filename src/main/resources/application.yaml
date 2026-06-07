@@ -1,6 +1,9 @@
 app:
   domain: ${DOMAIN}
 
+cors:
+  allowed-origins: "https://divum.eu"
+
 spring:
   profiles:
     default: dev

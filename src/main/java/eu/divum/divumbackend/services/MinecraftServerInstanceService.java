@@ -1,9 +1,12 @@
 package eu.divum.divumbackend.services;
 
+import eu.divum.divumbackend.dtos.minecraftserverinstance.DaemonConnectionInfo;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceRequest;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceResponse;
 
 public interface MinecraftServerInstanceService {
+
+    DaemonConnectionInfo getDaemonConnectionInfoById(String serverId);
 
     MinecraftServerInstanceResponse getById(String serverId);
 
