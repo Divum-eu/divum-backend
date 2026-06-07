@@ -3,6 +3,7 @@ package eu.divum.divumbackend.services.implementations;
 import eu.divum.divumbackend.domain.MinecraftServerInstance;
 import eu.divum.divumbackend.domain.ServerMachine;
 import eu.divum.divumbackend.domain.User;
+import eu.divum.divumbackend.dtos.minecraftserverinstance.DaemonConnectionInfo;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceConfiguration;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceRequest;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceResponse;
@@ -57,6 +58,12 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
 
     @Value("${divum-daemon.api-scheme}")
     private String daemonEndpointScheme;
+
+    @Override
+    public DaemonConnectionInfo getDaemonConnectionInfoById(String serverId) {
+        return minecraftServerRepository.findDaemonConnectionInfoById(UUID.fromString(serverId))
+                .orElseThrow(() -> new MinecraftServerInstanceNotFound("Couldn't find Minecraft server instance with id " + serverId));
+    }
 
     @Override
     public MinecraftServerInstanceResponse getById(String serverId) {
