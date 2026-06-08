@@ -1,21 +1,23 @@
 package eu.divum.divumbackend.domain;
 
-import eu.divum.divumbackend.constants.DomainConstants;
 import jakarta.persistence.*;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
 import java.util.UUID;
+
+import static eu.divum.divumbackend.constants.UserConstants.USERNAME_MAX_LENGTH;
+import static eu.divum.divumbackend.constants.UserConstants.EMAIL_ADDRESS_MAX_LENGTH;
 
 @Entity
 @Table(
@@ -36,10 +38,10 @@ public class User {
     @Column(name = "id", columnDefinition = "uuid")
     private UUID id;
 
-    @Column(name = "username", nullable = false, length = DomainConstants.USER_USERNAME_MAX_LENGTH)
+    @Column(name = "username", nullable = false, length = USERNAME_MAX_LENGTH)
     private String username;
 
-    @Column(name = "email_address", nullable = false, length = DomainConstants.USER_EMAIL_ADDRESS_MAX_LENGTH)
+    @Column(name = "email_address", nullable = false, length = EMAIL_ADDRESS_MAX_LENGTH)
     private String emailAddress;
 
     @Column(name = "password_data", nullable = false)
