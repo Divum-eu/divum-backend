@@ -1,5 +1,6 @@
 package eu.divum.divumbackend.controllers;
 
+import eu.divum.divumbackend.dtos.user.UpdateUserResponse;
 import eu.divum.divumbackend.services.UserService;
 
 import eu.divum.divumbackend.dtos.user.GetUserResponse;
@@ -36,9 +37,10 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> update(@Valid @RequestBody UpdateUserRequest updateUserRequest, @PathVariable String id) {
-        userService.update(id, updateUserRequest);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<UpdateUserResponse> update(@Valid @RequestBody UpdateUserRequest updateUserRequest, @PathVariable String id) {
+        UpdateUserResponse userResponse = userService.update(id, updateUserRequest);
+
+        return ResponseEntity.accepted().body(userResponse);
     }
 
     @DeleteMapping("/{id}")
