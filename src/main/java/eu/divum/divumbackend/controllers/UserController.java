@@ -47,6 +47,6 @@ public class UserController {
     public ResponseEntity<Void> delete(@PathVariable String id) {
         userService.delete(id);
 
-        return  ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 }

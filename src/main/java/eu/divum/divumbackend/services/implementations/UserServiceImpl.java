@@ -8,6 +8,7 @@ import eu.divum.divumbackend.dtos.user.UpdateUserRequest;
 
 import eu.divum.divumbackend.dtos.user.UpdateUserResponse;
 import eu.divum.divumbackend.exceptions.user.EmailTaken;
+import eu.divum.divumbackend.exceptions.user.SameUsernameUpdate;
 import eu.divum.divumbackend.exceptions.user.UsernameTaken;
 import eu.divum.divumbackend.mappers.user.UserMapper;
 
@@ -64,15 +65,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UpdateUserResponse update(String id, UpdateUserRequest request) {
-        boolean usernameAlreadyExists = userRepository.findByUsername(request.username()).isPresent();
-
-        if (usernameAlreadyExists) {
-            throw new UsernameTaken("A user with the given username already exists.");
-        }
-
         User user = userRepository.findById(UUID.fromString(id))
                 .orElseThrow(() ->
                         new UserNotFound("No user exists with the given id."));
+
+        if (user.getUsername().equals(request.username())) {
+            throw new SameUsernameUpdate("Cannot set username to the same value.");
+        }
+
+        if (userRepository.findByUsername(request.username()).isPresent()) {
+            throw new UsernameTaken("A user with the given username already exists.");
+        }
 
         user.setUsername(request.username());
 
@@ -86,7 +89,7 @@ public class UserServiceImpl implements UserService {
     public void delete(String id) {
         User user = userRepository.findById(UUID.fromString(id))
                 .orElseThrow(() ->
-                        new  UserNotFound("No user exists with the given id."));
+                        new UserNotFound("No user exists with the given id."));
 
         userRepository.delete(user);
     }

@@ -7,7 +7,7 @@ public class UserConstants {
 
     public final static int PASSWORD_MIN_LENGTH = 12;
 
-    public final static int PASSWORD_MAX_LENGTH = 128;
+    public final static int PASSWORD_MAX_LENGTH = 72;
 
     public final static int EMAIL_ADDRESS_MAX_LENGTH = 254;
 }

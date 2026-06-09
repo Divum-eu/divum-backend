@@ -1,6 +1,5 @@
 package eu.divum.divumbackend.domain;
 
-import eu.divum.divumbackend.constants.ServerInstanceConstants;
 import jakarta.persistence.*;
 
 import lombok.Getter;
