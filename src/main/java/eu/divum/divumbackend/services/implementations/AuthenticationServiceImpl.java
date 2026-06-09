@@ -19,7 +19,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Boolean validatePassword(String rawPassword, String hashedPassword) {
+    public boolean validatePassword(String rawPassword, String hashedPassword) {
         return passwordEncoder.matches(rawPassword, hashedPassword);
     }
 }
