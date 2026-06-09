@@ -4,7 +4,10 @@ import eu.divum.divumbackend.exceptions.HTTPRequestException;
 import eu.divum.divumbackend.exceptions.minecraftserverinstance.*;
 import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
 import eu.divum.divumbackend.exceptions.servermachine.NotEnoughServerResources;
+import eu.divum.divumbackend.exceptions.user.EmailTaken;
+import eu.divum.divumbackend.exceptions.user.SameUsernameUpdate;
 import eu.divum.divumbackend.exceptions.user.UserNotFound;
+import eu.divum.divumbackend.exceptions.user.UsernameTaken;
 import org.springframework.http.*;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -29,6 +32,42 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage()
         );
         problemDetail.setTitle("User not found.");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(UsernameTaken.class)
+    public ProblemDetail handleUsernameTaken(UsernameTaken ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                ex.getMessage()
+        );
+
+        problemDetail.setTitle("Username is already taken.");
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(EmailTaken.class)
+    public ProblemDetail handleEmailTaken(EmailTaken ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                ex.getMessage()
+        );
+
+        problemDetail.setTitle("Email is already in use.");
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(SameUsernameUpdate.class)
+    public ProblemDetail handleSameUsernameUpdate(SameUsernameUpdate ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNPROCESSABLE_CONTENT,
+                ex.getMessage()
+        );
+
+        problemDetail.setTitle("Username update with the same username.");
+
         return problemDetail;
     }
 

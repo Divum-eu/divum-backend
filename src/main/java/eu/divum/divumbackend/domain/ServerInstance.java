@@ -1,7 +1,5 @@
 package eu.divum.divumbackend.domain;
 
-import eu.divum.divumbackend.constants.DomainConstants;
-
 import jakarta.persistence.*;
 
 import lombok.Getter;
@@ -13,6 +11,9 @@ import org.hibernate.annotations.*;
 import java.time.Instant;
 
 import java.util.UUID;
+
+import static eu.divum.divumbackend.constants.ServerInstanceConstants.ADDRESS_MAX_LENGTH;
+import static eu.divum.divumbackend.constants.ServerInstanceConstants.NAME_MAX_LENGTH;
 
 @Entity
 @Table(
@@ -40,10 +41,10 @@ public class ServerInstance {
     @JoinColumn(name = "server_machine_id", nullable = false)
     private ServerMachine serverMachine;
 
-    @Column(name = "name", nullable = false, length = DomainConstants.SERVER_INSTANCE_NAME_MAX_LENGTH)
+    @Column(name = "name", nullable = false, length = NAME_MAX_LENGTH)
     private String name;
 
-    @Column(name = "address", nullable = false, length = DomainConstants.SERVER_INSTANCE_ADDRESS_MAX_LENGTH)
+    @Column(name = "address", nullable = false, length = ADDRESS_MAX_LENGTH)
     private String address;
 
     @CreationTimestamp

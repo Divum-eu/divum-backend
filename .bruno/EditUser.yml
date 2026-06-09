@@ -10,8 +10,7 @@ http:
     type: json
     data: |-
       {
-        username: "Dimitar2"
-        // More fields will be added as necessary
+        "username": "Dimitar2"
       }
   auth: inherit
 

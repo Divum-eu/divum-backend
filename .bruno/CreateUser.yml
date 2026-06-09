@@ -10,9 +10,9 @@ http:
     type: json
     data: |-
       {
-        username: "Dimitar",
-        email: "dimitar@divum.eu",
-        password: "123456" // We'll have TLS obviously
+        "username": "Dimitar",
+        "emailAddress": "dimitar@divum.eu",
+        "password": "Password123!"
       }
   auth: inherit
 
