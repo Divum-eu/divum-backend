@@ -19,7 +19,6 @@ import eu.divum.divumbackend.repositories.ServerMachineRepository;
 import eu.divum.divumbackend.repositories.UserRepository;
 import eu.divum.divumbackend.services.DNSRecordManager;
 import eu.divum.divumbackend.services.MinecraftServerInstanceService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
