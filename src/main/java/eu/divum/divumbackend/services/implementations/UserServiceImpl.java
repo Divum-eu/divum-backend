@@ -22,13 +22,9 @@ import eu.divum.divumbackend.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-import org.jspecify.annotations.NonNull;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -47,18 +43,6 @@ public class UserServiceImpl implements UserService {
                         new UserNotFound("No user exists with the given id."));
 
         return mapper.mapToGetDto(user);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
-        eu.divum.divumbackend.domain.User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new UserNotFound("User with username " + username + " not found")
-        );
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPasswordData(),
-                Collections.emptyList()
-        );
     }
 
     @Override
