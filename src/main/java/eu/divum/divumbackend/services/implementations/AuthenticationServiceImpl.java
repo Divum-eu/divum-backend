@@ -15,12 +15,9 @@ import eu.divum.divumbackend.repositories.UserRepository;
 import eu.divum.divumbackend.security.Jwt;
 import eu.divum.divumbackend.security.JwtService;
 import eu.divum.divumbackend.services.AuthenticationService;
-
-import eu.divum.divumbackend.services.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;

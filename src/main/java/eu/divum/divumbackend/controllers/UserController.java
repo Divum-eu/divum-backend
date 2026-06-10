@@ -1,15 +1,12 @@
 package eu.divum.divumbackend.controllers;
 
-import eu.divum.divumbackend.dtos.user.UpdateUserResponse;
-import eu.divum.divumbackend.services.UserService;
-
+import eu.divum.divumbackend.dtos.user.CreateUserRequest;
 import eu.divum.divumbackend.dtos.user.GetUserResponse;
 import eu.divum.divumbackend.dtos.user.UpdateUserRequest;
-import eu.divum.divumbackend.dtos.user.CreateUserRequest;
-
+import eu.divum.divumbackend.dtos.user.UpdateUserResponse;
+import eu.divum.divumbackend.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;

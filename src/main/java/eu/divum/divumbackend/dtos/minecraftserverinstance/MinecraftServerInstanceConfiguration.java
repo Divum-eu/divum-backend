@@ -4,7 +4,7 @@ import eu.divum.divumbackend.domain.enums.MinecraftServerDifficulty;
 import eu.divum.divumbackend.domain.enums.MinecraftServerMode;
 import eu.divum.divumbackend.domain.enums.MinecraftServerType;
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.Data;
 
 import java.util.List;
 

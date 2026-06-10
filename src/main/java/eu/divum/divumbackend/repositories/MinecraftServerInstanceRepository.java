@@ -1,16 +1,14 @@
 package eu.divum.divumbackend.repositories;
 
 import eu.divum.divumbackend.domain.MinecraftServerInstance;
-
 import eu.divum.divumbackend.dtos.minecraftserverinstance.DaemonConnectionInfo;
-import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.UUID;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface MinecraftServerInstanceRepository extends JpaRepository<MinecraftServerInstance, UUID> {

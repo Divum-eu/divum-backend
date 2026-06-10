@@ -1,10 +1,10 @@
 package eu.divum.divumbackend.dtos.user;
 
-import static eu.divum.divumbackend.constants.UserConstants.USERNAME_MIN_LENGTH;
-import static eu.divum.divumbackend.constants.UserConstants.USERNAME_MAX_LENGTH;
-
-import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+import static eu.divum.divumbackend.constants.UserConstants.USERNAME_MAX_LENGTH;
+import static eu.divum.divumbackend.constants.UserConstants.USERNAME_MIN_LENGTH;
 
 public record UpdateUserRequest(
         @NotBlank @Size(

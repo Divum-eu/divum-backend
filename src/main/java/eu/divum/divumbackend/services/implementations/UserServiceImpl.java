@@ -1,27 +1,20 @@
 package eu.divum.divumbackend.services.implementations;
 
 import eu.divum.divumbackend.domain.User;
-
 import eu.divum.divumbackend.dtos.user.CreateUserRequest;
 import eu.divum.divumbackend.dtos.user.GetUserResponse;
 import eu.divum.divumbackend.dtos.user.UpdateUserRequest;
-
 import eu.divum.divumbackend.dtos.user.UpdateUserResponse;
 import eu.divum.divumbackend.exceptions.user.EmailTaken;
 import eu.divum.divumbackend.exceptions.user.SameUsernameUpdate;
+import eu.divum.divumbackend.exceptions.user.UserNotFound;
 import eu.divum.divumbackend.exceptions.user.UsernameTaken;
 import eu.divum.divumbackend.mappers.user.UserMapper;
-
-import eu.divum.divumbackend.exceptions.user.UserNotFound;
-
 import eu.divum.divumbackend.repositories.UserRepository;
-
 import eu.divum.divumbackend.services.AuthenticationService;
 import eu.divum.divumbackend.services.UserService;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

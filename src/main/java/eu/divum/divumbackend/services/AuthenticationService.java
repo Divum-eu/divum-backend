@@ -5,7 +5,6 @@ import eu.divum.divumbackend.dtos.auth.LoginUserRequest;
 import eu.divum.divumbackend.dtos.auth.RegisterDto;
 import eu.divum.divumbackend.dtos.auth.RegisterUserRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 
 public interface AuthenticationService {
     String generatePasswordHash(String password);
