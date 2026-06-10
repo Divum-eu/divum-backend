@@ -47,11 +47,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String create(CreateUserRequest request) {
-        if (userRepository.findByUsername(request.username()).isPresent()) {
+        if (userRepository.existsByUsername(request.username())) {
             throw new UsernameTaken("A user with the given username already exists.");
         }
 
-        if (userRepository.findByEmailAddress(request.emailAddress()).isPresent()) {
+        if (userRepository.existsByEmailAddress(request.emailAddress())) {
             throw new EmailTaken("A user with the given email already exists.");
         }
 
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
             throw new SameUsernameUpdate("Cannot set username to the same value.");
         }
 
-        if (userRepository.findByUsername(request.username()).isPresent()) {
+        if (userRepository.existsByUsername(request.username())) {
             throw new UsernameTaken("A user with the given username already exists.");
         }
 

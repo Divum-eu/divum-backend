@@ -2,6 +2,7 @@ package eu.divum.divumbackend.repositories;
 
 import eu.divum.divumbackend.domain.User;
 
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,4 +14,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByUsername(String username);
 
     Optional<User> findByEmailAddress(String emailAddress);
+
+    boolean existsByUsername(String username);
+
+    boolean existsByEmailAddress(String emailAddress);
 }
