@@ -3,6 +3,7 @@ package eu.divum.divumbackend.services.implementations;
 import eu.divum.divumbackend.domain.MinecraftServerInstance;
 import eu.divum.divumbackend.domain.ServerMachine;
 import eu.divum.divumbackend.domain.User;
+import eu.divum.divumbackend.dtos.minecraftserverinstance.DaemonConnectionInfo;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceConfiguration;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceRequest;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceResponse;
@@ -18,7 +19,6 @@ import eu.divum.divumbackend.repositories.ServerMachineRepository;
 import eu.divum.divumbackend.repositories.UserRepository;
 import eu.divum.divumbackend.services.DNSRecordManager;
 import eu.divum.divumbackend.services.MinecraftServerInstanceService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,6 +57,12 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
 
     @Value("${divum-daemon.api-scheme}")
     private String daemonEndpointScheme;
+
+    @Override
+    public DaemonConnectionInfo getDaemonConnectionInfoById(String serverId) {
+        return minecraftServerRepository.findDaemonConnectionInfoById(UUID.fromString(serverId))
+                .orElseThrow(() -> new MinecraftServerInstanceNotFound("Couldn't find Minecraft server instance with id " + serverId));
+    }
 
     @Override
     public MinecraftServerInstanceResponse getById(String serverId) {
@@ -182,7 +188,6 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     }
 
     @Override
-    @Transactional
     public String create(MinecraftServerInstanceRequest request) {
         float requiredCpuCores = request.configuration().getCpuCoresLimit();
         int requiredRamMb = request.configuration().getMemoryLimit();
