@@ -2,7 +2,7 @@ app:
   domain: ${DOMAIN}
 
 cors:
-  allowed-origins: "https://divum.eu"
+  allowed-origins: "https://divum.eu,http://localhost:4200" # Comma separated value, DON'T add whitespace
 
 spring:
   profiles:
@@ -38,9 +38,6 @@ spring:
         show_sql: true
         format_sql: true
         default_schema: divum
-
-cors:
-  allowed-origins: "http://localhost:4200"
 
 jwt:
   secret: ${JWT_SECRET}
