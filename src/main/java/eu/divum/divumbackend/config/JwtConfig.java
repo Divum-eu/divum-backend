@@ -16,10 +16,10 @@ public class JwtConfig {
     private String secret;
 
     @Value("${jwt.access-token-expiration}")
-    private long accessTokenExpiration;
+    private int accessTokenExpiration;
 
     @Value("${jwt.refresh-token-expiration}")
-    private long refreshTokenExpiration;
+    private int refreshTokenExpiration;
 
     private SecretKey secretKey;
 
