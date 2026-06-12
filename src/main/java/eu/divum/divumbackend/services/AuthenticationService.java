@@ -1,9 +1,6 @@
 package eu.divum.divumbackend.services;
 
-import eu.divum.divumbackend.dtos.auth.JwtResponse;
-import eu.divum.divumbackend.dtos.auth.LoginUserRequest;
-import eu.divum.divumbackend.dtos.auth.RegisterDto;
-import eu.divum.divumbackend.dtos.auth.RegisterUserRequest;
+import eu.divum.divumbackend.dtos.auth.*;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface AuthenticationService {
@@ -11,7 +8,7 @@ public interface AuthenticationService {
 
     boolean validatePassword(String rawPassword, String hashedPassword);
 
-    JwtResponse login(LoginUserRequest request, HttpServletResponse response);
+    AuthenticatedDto login(LoginUserRequest request);
 
-    RegisterDto register(RegisterUserRequest request, HttpServletResponse response);
+    AuthenticatedDto register(RegisterUserRequest request);
 }
