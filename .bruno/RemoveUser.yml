@@ -5,11 +5,13 @@ info:
 
 http:
   method: DELETE
-  url: "{{address}}/{{base_route}}/users/{{user_id}}"
+  url: "{{address}}/{{base_route}}/users/me"
   body:
     type: json
     data: ""
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 settings:
   encodeUrl: true
