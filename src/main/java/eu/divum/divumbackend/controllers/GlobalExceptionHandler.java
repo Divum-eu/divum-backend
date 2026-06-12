@@ -8,8 +8,10 @@ import eu.divum.divumbackend.exceptions.user.EmailTaken;
 import eu.divum.divumbackend.exceptions.user.SameUsernameUpdate;
 import eu.divum.divumbackend.exceptions.user.UserNotFound;
 import eu.divum.divumbackend.exceptions.user.UsernameTaken;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -166,6 +168,39 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage()
         );
         problemDetail.setTitle("Not enough server resources for the given RAM and CPU requirements are available.");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(MinecraftServerInstanceNotOwned.class)
+    public ProblemDetail handleMinecraftServerInstanceNotOwned() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Minecraft server instance not owned."
+        );
+
+        problemDetail.setTitle("Unauthorized access");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ProblemDetail handleAuthenticationException() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Wrong credentials."
+        );
+
+        problemDetail.setTitle("Wrong credentials");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolation() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                "The provided data conflicts with an existing record. Please check your inputs and try again."
+        );
+
+        problemDetail.setTitle("Data conflict");
         return problemDetail;
     }
 
