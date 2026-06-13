@@ -56,5 +56,5 @@ server:
 
 security:
   jwt:
-    daemon-issuer: divum-backend-dev
+    daemon-issuer: divum-backend
     key-rotation-period-hours: 24
