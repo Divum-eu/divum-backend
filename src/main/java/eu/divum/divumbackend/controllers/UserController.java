@@ -1,6 +1,5 @@
 package eu.divum.divumbackend.controllers;
 
-import eu.divum.divumbackend.dtos.user.CreateUserRequest;
 import eu.divum.divumbackend.dtos.user.GetUserResponse;
 import eu.divum.divumbackend.dtos.user.UpdateUserRequest;
 import eu.divum.divumbackend.dtos.user.UpdateUserResponse;
@@ -10,9 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.UUID;
 
 @RestController
