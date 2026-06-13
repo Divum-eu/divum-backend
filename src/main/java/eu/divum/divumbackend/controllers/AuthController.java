@@ -2,7 +2,6 @@ package eu.divum.divumbackend.controllers;
 
 import eu.divum.divumbackend.config.JwtConfig;
 import eu.divum.divumbackend.dtos.auth.*;
-import eu.divum.divumbackend.security.Jwt;
 import eu.divum.divumbackend.services.AuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -51,6 +50,14 @@ public class AuthController {
         attachRefreshTokenCookie(response, authenticatedDto.refreshToken());
 
         return ResponseEntity.created(uri).body(new JwtResponse(authenticatedDto.accessToken()));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtResponse> refresh(
+            @Valid @RequestBody RefreshTokenRequest request
+    ) {
+        AuthenticatedDto authenticatedDto = authenticationService.refresh(request.refreshToken());
+        return ResponseEntity.accepted().body(new JwtResponse(authenticatedDto.accessToken()));
     }
 
     private void attachRefreshTokenCookie(HttpServletResponse response, String refreshToken) {

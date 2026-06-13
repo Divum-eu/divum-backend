@@ -1,7 +1,8 @@
 package eu.divum.divumbackend.services;
 
-import eu.divum.divumbackend.dtos.auth.*;
-import jakarta.servlet.http.HttpServletResponse;
+import eu.divum.divumbackend.dtos.auth.AuthenticatedDto;
+import eu.divum.divumbackend.dtos.auth.LoginUserRequest;
+import eu.divum.divumbackend.dtos.auth.RegisterUserRequest;
 
 public interface AuthenticationService {
     String generatePasswordHash(String password);
@@ -11,4 +12,6 @@ public interface AuthenticationService {
     AuthenticatedDto login(LoginUserRequest request);
 
     AuthenticatedDto register(RegisterUserRequest request);
+
+    AuthenticatedDto refresh(String refreshToken);
 }
