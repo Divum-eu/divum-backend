@@ -11,6 +11,7 @@ import eu.divum.divumbackend.exceptions.user.UsernameTaken;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -190,6 +191,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
 
         problemDetail.setTitle("Wrong credentials");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ProblemDetail handleBadCredentials() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Invalid credentials."
+        );
+
+        problemDetail.setTitle("Authentication failed");
         return problemDetail;
     }
 

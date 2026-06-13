@@ -1,6 +1,5 @@
 package eu.divum.divumbackend.services.implementations;
 
-import eu.divum.divumbackend.exceptions.user.UserNotFound;
 import eu.divum.divumbackend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
@@ -21,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @NullMarked
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         eu.divum.divumbackend.domain.User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new UserNotFound("User with username " + username + " not found")
+                () -> new UsernameNotFoundException("User with username " + username + " not found")
         );
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
