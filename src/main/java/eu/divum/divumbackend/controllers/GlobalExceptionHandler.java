@@ -178,7 +178,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 "Minecraft server instance not owned."
         );
 
-        problemDetail.setTitle("Unauthorized access");
+        problemDetail.setTitle("Forbidden");
         return problemDetail;
     }
 
