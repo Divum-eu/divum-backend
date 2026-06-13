@@ -18,6 +18,7 @@ import eu.divum.divumbackend.repositories.MinecraftServerInstanceRepository;
 import eu.divum.divumbackend.repositories.ServerMachineRepository;
 import eu.divum.divumbackend.repositories.UserRepository;
 import eu.divum.divumbackend.services.DNSRecordManager;
+import eu.divum.divumbackend.services.JwtTokenService;
 import eu.divum.divumbackend.services.MinecraftServerInstanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,6 +32,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -46,6 +48,8 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
 
     private final DNSRecordManager dnsRecordManager;
 
+    private final JwtTokenService jwtTokenService;
+
     @Qualifier("httpClient")
     private final HttpClient httpClient;
 
@@ -57,6 +61,9 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
 
     @Value("${divum-daemon.api-scheme}")
     private String daemonEndpointScheme;
+
+    @Value("${security.jwt.daemon-issuer}")
+    private String daemonJwtIssuer;
 
     @Override
     public DaemonConnectionInfo getDaemonConnectionInfoById(String serverId) {
@@ -93,9 +100,12 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
                         daemonEndpointScheme + serverInstance.getServerMachine().getIp() + daemonEndpointAddress + "/%s/start",
                         serverInstance.getDaemonId());
 
+        String daemonJwt = jwtTokenService.writeSignedToken(Map.of(), daemonJwtIssuer);
+
         HttpRequest instanceStartRequest = HttpRequest.newBuilder()
                 .uri(URI.create(daemonStartApiUrl))
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + daemonJwt)
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
 
@@ -125,9 +135,12 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
                         daemonEndpointScheme + serverInstance.getServerMachine().getIp() + daemonEndpointAddress + "/%s/stop",
                         serverInstance.getDaemonId());
 
+        String daemonJwt = jwtTokenService.writeSignedToken(Map.of(), daemonJwtIssuer);
+
         HttpRequest instanceStartRequest = HttpRequest.newBuilder()
                 .uri(URI.create(daemonStopApiUrl))
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + daemonJwt)
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
 
@@ -151,12 +164,15 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
         MinecraftServerInstance serverInstance = minecraftServerRepository.findById(UUID.fromString(serverId))
                 .orElseThrow(() -> new MinecraftServerInstanceNotFound("Couldn't find Minecraft instance with the given ID."));
 
+        String daemonJwt = jwtTokenService.writeSignedToken(Map.of(), daemonJwtIssuer);
+
         String daemonDeleteUrl = String.format(
                 daemonEndpointScheme + serverInstance.getServerMachine().getIp() + daemonEndpointAddress + "/%s",
                 serverInstance.getDaemonId());
 
         HttpRequest instanceDeleteRequest = HttpRequest.newBuilder()
                 .uri(URI.create(daemonDeleteUrl))
+                .header("Authorization", "Bearer " + daemonJwt)
                 .DELETE()
                 .build();
 
@@ -217,11 +233,14 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
             registeredServerDomain =
                     dnsRecordManager.create(request.configuration().getServerAddress(), serverMachine.getIp());
 
+            String daemonJwt = jwtTokenService.writeSignedToken(Map.of(), daemonJwtIssuer);
+
             String serverConfigurationPayload = jsonMapper.writeValueAsString(request.configuration());
 
             HttpRequest serverCreationRequest = HttpRequest.newBuilder()
                     .uri(URI.create(daemonEndpointScheme + serverMachine.getIp() + daemonEndpointAddress))
                     .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + daemonJwt)
                     .POST(HttpRequest.BodyPublishers.ofString(serverConfigurationPayload))
                     .build();
 
@@ -293,13 +312,16 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
         String daemonUpdateUrl = String.format("%s%s%s/%s",
                 daemonEndpointScheme, serverInstance.getServerMachine().getIp(), daemonEndpointAddress, serverInstance.getDaemonId());
 
-        HttpRequest daemonUpdateRequest = HttpRequest.newBuilder()
-                .uri(URI.create(daemonUpdateUrl))
-                .header("Content-Type", "application/json")
-                .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonMapper.writeValueAsString(request.configuration())))
-                .build();
+        String daemonJwt = jwtTokenService.writeSignedToken(Map.of(), daemonJwtIssuer);
 
         try {
+            HttpRequest daemonUpdateRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(daemonUpdateUrl))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + daemonJwt)
+                    .method("PATCH", HttpRequest.BodyPublishers.ofString(jsonMapper.writeValueAsString(request.configuration())))
+                    .build();
+
             HttpResponse<String> daemonUpdateResponse = httpClient.send(daemonUpdateRequest, HttpResponse.BodyHandlers.ofString());
 
             if (daemonUpdateResponse.statusCode() != 204) {
