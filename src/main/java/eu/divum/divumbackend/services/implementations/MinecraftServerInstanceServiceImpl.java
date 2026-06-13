@@ -65,10 +65,14 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     }
 
     @Override
-    public MinecraftServerInstanceResponse getById(String serverId) {
-        MinecraftServerInstance serverInstance = minecraftServerRepository.findById(UUID.fromString(serverId))
+    public MinecraftServerInstanceResponse getById(String serverId, String userId) {
+        MinecraftServerInstance serverInstance = minecraftServerRepository.findByIdWithOwner(UUID.fromString(serverId))
                 .orElseThrow(() ->
                         new MinecraftServerInstanceNotFound("No Minecraft server instance with the given ID exists."));
+
+        if (!serverInstance.getOwner().getId().toString().equals(userId)) {
+            throw new MinecraftServerInstanceNotOwned();
+        }
 
         return dtoMapper.mapToResponse(serverInstance);
     }
@@ -83,10 +87,14 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     }
 
     @Override
-    public void start(String serverId) {
-        MinecraftServerInstance serverInstance = minecraftServerRepository.findById(UUID.fromString(serverId))
+    public void start(String serverId, String userId) {
+        MinecraftServerInstance serverInstance = minecraftServerRepository.findByIdWithOwner(UUID.fromString(serverId))
                 .orElseThrow(() ->
                         new MinecraftServerInstanceNotFound("No Minecraft server instance with the given ID exists."));
+
+        if (!serverInstance.getOwner().getId().toString().equals(userId)) {
+            throw new MinecraftServerInstanceNotOwned();
+        }
 
         String daemonStartApiUrl =
                 String.format(
@@ -115,10 +123,14 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     }
 
     @Override
-    public void stop(String serverId) {
-        MinecraftServerInstance serverInstance = minecraftServerRepository.findById(UUID.fromString(serverId))
+    public void stop(String serverId, String userId) {
+        MinecraftServerInstance serverInstance = minecraftServerRepository.findByIdWithOwner(UUID.fromString(serverId))
                 .orElseThrow(() ->
                         new MinecraftServerInstanceNotFound("No Minecraft server instance with the given ID exists."));
+
+        if (!serverInstance.getOwner().getId().toString().equals(userId)) {
+            throw new MinecraftServerInstanceNotOwned();
+        }
 
         String daemonStopApiUrl =
                 String.format(
@@ -147,9 +159,13 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     }
 
     @Override
-    public void remove(String serverId) {
-        MinecraftServerInstance serverInstance = minecraftServerRepository.findById(UUID.fromString(serverId))
+    public void remove(String serverId, String userId) {
+        MinecraftServerInstance serverInstance = minecraftServerRepository.findByIdWithOwner(UUID.fromString(serverId))
                 .orElseThrow(() -> new MinecraftServerInstanceNotFound("Couldn't find Minecraft instance with the given ID."));
+
+        if (!serverInstance.getOwner().getId().toString().equals(userId)) {
+            throw new MinecraftServerInstanceNotOwned();
+        }
 
         String daemonDeleteUrl = String.format(
                 daemonEndpointScheme + serverInstance.getServerMachine().getIp() + daemonEndpointAddress + "/%s",
@@ -188,7 +204,8 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     }
 
     @Override
-    public String create(MinecraftServerInstanceRequest request) {
+    public String create(MinecraftServerInstanceRequest request, String userId) {
+
         float requiredCpuCores = request.configuration().getCpuCoresLimit();
         int requiredRamMb = request.configuration().getMemoryLimit();
 
@@ -202,9 +219,9 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
             throw new NoAvailableServerMachines("No server machines for the given RAM and CPU requirements are available.");
         }
 
-        User serverCreator = userRepository.findByUsername(request.username())
+        User serverOwner = userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() ->
-                        new UserNotFound("No user with the given username exists."));
+                        new UserNotFound("No user with the given ID exists."));
 
         ServerMachine serverMachine = availableMachines.getFirst();
 
@@ -239,7 +256,7 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
             MinecraftServerInstance serverInstanceEntity = dtoMapper.mapToEntity(request);
 
             serverInstanceEntity.setDaemonId(daemonId);
-            serverInstanceEntity.setOwner(serverCreator);
+            serverInstanceEntity.setOwner(serverOwner);
             serverInstanceEntity.setServerMachine(serverMachine);
             serverInstanceEntity.setAddress(registeredServerDomain);
             serverInstanceEntity.setName(request.configuration().getServerName());
@@ -259,9 +276,13 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     }
 
     @Override
-    public MinecraftServerInstanceResponse update(String serverId, MinecraftServerInstanceRequest request) {
-        MinecraftServerInstance serverInstance = minecraftServerRepository.findById(UUID.fromString(serverId))
+    public MinecraftServerInstanceResponse update(String serverId, MinecraftServerInstanceRequest request, String userId) {
+        MinecraftServerInstance serverInstance = minecraftServerRepository.findByIdWithOwner(UUID.fromString(serverId))
                 .orElseThrow(() -> new MinecraftServerInstanceNotFound("Minecraft server instance not found."));
+
+        if (!serverInstance.getOwner().getId().toString().equals(userId)) {
+            throw new MinecraftServerInstanceNotOwned();
+        }
 
         MinecraftServerInstanceConfiguration oldConfiguration = serverInstance.getConfiguration();
         MinecraftServerInstanceConfiguration newConfiguration = request.configuration();

@@ -2,10 +2,7 @@ package eu.divum.divumbackend.services.implementations;
 
 import eu.divum.divumbackend.config.JwtConfig;
 import eu.divum.divumbackend.domain.User;
-import eu.divum.divumbackend.dtos.auth.JwtResponse;
-import eu.divum.divumbackend.dtos.auth.LoginUserRequest;
-import eu.divum.divumbackend.dtos.auth.RegisterDto;
-import eu.divum.divumbackend.dtos.auth.RegisterUserRequest;
+import eu.divum.divumbackend.dtos.auth.*;
 import eu.divum.divumbackend.dtos.user.CreateUserRequest;
 import eu.divum.divumbackend.exceptions.user.EmailTaken;
 import eu.divum.divumbackend.exceptions.user.UserNotFound;
@@ -45,7 +42,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public JwtResponse login(LoginUserRequest request, HttpServletResponse response) {
+    public AuthenticatedDto login(LoginUserRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.username(),
@@ -60,13 +57,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Jwt accessToken = jwtService.generateAccessToken(user);
         Jwt refreshToken = jwtService.generateRefreshToken(user);
 
-        attachRefreshTokenCookie(response, refreshToken);
-
-        return new JwtResponse(accessToken.toString());
+        return new AuthenticatedDto(user.getId().toString(), accessToken.toString(), refreshToken.toString());
     }
 
     @Override
-    public RegisterDto register(RegisterUserRequest request, HttpServletResponse response) {
+    public AuthenticatedDto register(RegisterUserRequest request) {
 
         if (userRepository.existsByUsername(request.username())) {
             throw new UsernameTaken("Username " + request.username() + " is taken.");
@@ -88,17 +83,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Jwt accessToken = jwtService.generateAccessToken(user);
         Jwt refreshToken = jwtService.generateRefreshToken(user);
 
-        attachRefreshTokenCookie(response, refreshToken);
-
-        return new RegisterDto(accessToken.toString(), user.getId());
-    }
-
-    private void attachRefreshTokenCookie(HttpServletResponse response, Jwt refreshToken) {
-        Cookie cookie = new Cookie("refreshToken", refreshToken.toString());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/api/v1/auth/refresh");
-        cookie.setMaxAge(jwtConfig.getRefreshTokenExpiration());
-        cookie.setSecure(true);
-        response.addCookie(cookie);
+        return new AuthenticatedDto(user.getId().toString(), accessToken.toString(), refreshToken.toString());
     }
 }
