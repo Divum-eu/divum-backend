@@ -18,7 +18,7 @@ import java.util.Collections;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final UserJwtService userJwtService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -30,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.replace("Bearer ", "");
-        Jwt jwt = jwtService.parseToken(token);
+        UserJwt jwt = userJwtService.parseToken(token);
 
         if (jwt == null || jwt.isExpired()) {
             filterChain.doFilter(request, response);

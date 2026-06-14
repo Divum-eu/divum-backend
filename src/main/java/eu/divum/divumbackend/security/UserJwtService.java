@@ -12,36 +12,36 @@ import java.util.Date;
 
 @RequiredArgsConstructor
 @Service
-public class JwtService {
+public class UserJwtService {
 
     private final JwtConfig jwtConfig;
 
-    public Jwt generateAccessToken(User user) {
+    public UserJwt generateAccessToken(User user) {
         return generateToken(user, jwtConfig.getAccessTokenExpiration());
     }
 
-    public Jwt generateRefreshToken(User user) {
+    public UserJwt generateRefreshToken(User user) {
         return generateToken(user, jwtConfig.getRefreshTokenExpiration());
     }
 
-    public Jwt parseToken(String token) {
+    public UserJwt parseToken(String token) {
         try {
             Claims claims = getClaims(token);
-            return new Jwt(claims, jwtConfig.getSecretKey());
+            return new UserJwt(claims, jwtConfig.getSecretKey());
         } catch (JwtException e) {
             return null;
         }
     }
 
 
-    private Jwt generateToken(User user, long tokenExpiration) {
+    private UserJwt generateToken(User user, long tokenExpiration) {
         Claims claims = Jwts.claims()
                 .subject(user.getId().toString())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * tokenExpiration))
                 .build();
 
-        return new Jwt(claims, jwtConfig.getSecretKey());
+        return new UserJwt(claims, jwtConfig.getSecretKey());
     }
 
     private Claims getClaims(String token) {

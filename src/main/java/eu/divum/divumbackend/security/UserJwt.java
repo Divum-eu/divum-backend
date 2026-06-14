@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class Jwt {
+public class UserJwt {
 
     private final Claims claims;
     private final SecretKey secretKey;

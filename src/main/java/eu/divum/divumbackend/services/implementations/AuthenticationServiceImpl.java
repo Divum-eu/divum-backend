@@ -9,8 +9,8 @@ import eu.divum.divumbackend.exceptions.user.UserNotFound;
 import eu.divum.divumbackend.exceptions.user.UsernameTaken;
 import eu.divum.divumbackend.mappers.user.UserMapper;
 import eu.divum.divumbackend.repositories.UserRepository;
-import eu.divum.divumbackend.security.Jwt;
-import eu.divum.divumbackend.security.JwtService;
+import eu.divum.divumbackend.security.UserJwt;
+import eu.divum.divumbackend.security.UserJwtService;
 import eu.divum.divumbackend.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,7 +28,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
+    private final UserJwtService userJwtService;
     private final UserMapper userMapper;
 
     @Override
@@ -54,8 +54,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 () -> new UserNotFound("User not found.")
         );
 
-        Jwt accessToken = jwtService.generateAccessToken(user);
-        Jwt refreshToken = jwtService.generateRefreshToken(user);
+        UserJwt accessToken = userJwtService.generateAccessToken(user);
+        UserJwt refreshToken = userJwtService.generateRefreshToken(user);
 
         return new AuthenticatedDto(user.getId().toString(), accessToken.toString(), refreshToken.toString());
     }
@@ -80,8 +80,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setPasswordData(generatePasswordHash(request.password()));
         userRepository.save(user);
 
-        Jwt accessToken = jwtService.generateAccessToken(user);
-        Jwt refreshToken = jwtService.generateRefreshToken(user);
+        UserJwt accessToken = userJwtService.generateAccessToken(user);
+        UserJwt refreshToken = userJwtService.generateRefreshToken(user);
 
         return new AuthenticatedDto(user.getId().toString(), accessToken.toString(), refreshToken.toString());
     }
@@ -89,16 +89,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthenticatedDto refresh(String refreshToken) {
 
-        UUID userId = jwtService.parseToken(refreshToken).getUserId();
+        UUID userId = userJwtService.parseToken(refreshToken).getUserId();
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFound("User not found."));
 
-        if (jwtService.parseToken(refreshToken).isExpired()) {
+        if (userJwtService.parseToken(refreshToken).isExpired()) {
             throw new BadCredentialsException("Invalid or expired refresh token.");
         }
 
-        Jwt newAccessToken = jwtService.generateAccessToken(user);
+        UserJwt newAccessToken = userJwtService.generateAccessToken(user);
 
         return new AuthenticatedDto(userId.toString(), newAccessToken.toString(), refreshToken);
     }
