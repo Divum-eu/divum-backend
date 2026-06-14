@@ -18,11 +18,11 @@ import java.util.UUID;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/me")
+    @GetMapping("/{id}")
     public ResponseEntity<GetUserResponse> getUser(
-            @AuthenticationPrincipal UUID userId
+            @PathVariable String id
     ) {
-        return ResponseEntity.ok(userService.get(userId.toString()));
+        return ResponseEntity.ok(userService.get(id));
     }
 
     // This will be implemented in the future for admins to use
