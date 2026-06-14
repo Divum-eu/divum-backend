@@ -175,11 +175,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MinecraftServerInstanceNotOwned.class)
     public ProblemDetail handleMinecraftServerInstanceNotOwned() {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.FORBIDDEN,
-                "Minecraft server instance not owned."
+                HttpStatus.NOT_FOUND,
+                "Minecraft server instance not found."
         );
 
-        problemDetail.setTitle("Forbidden");
+        problemDetail.setTitle("Not found");
         return problemDetail;
     }
 
