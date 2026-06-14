@@ -1,10 +1,8 @@
 package eu.divum.divumbackend.services.implementations;
 
-import eu.divum.divumbackend.config.JwtConfig;
 import eu.divum.divumbackend.domain.User;
 import eu.divum.divumbackend.dtos.auth.AuthenticatedDto;
 import eu.divum.divumbackend.dtos.auth.LoginUserRequest;
-import eu.divum.divumbackend.dtos.auth.RegisterUserRequest;
 import eu.divum.divumbackend.dtos.user.CreateUserRequest;
 import eu.divum.divumbackend.exceptions.user.EmailTaken;
 import eu.divum.divumbackend.exceptions.user.UserNotFound;
@@ -31,7 +29,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final JwtConfig jwtConfig;
     private final UserMapper userMapper;
 
     @Override
@@ -64,19 +61,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public AuthenticatedDto register(RegisterUserRequest request) {
+    public AuthenticatedDto register(CreateUserRequest request) {
 
         if (userRepository.existsByUsername(request.username())) {
             throw new UsernameTaken("Username " + request.username() + " is taken.");
         }
-        if (userRepository.existsByEmailAddress(request.email())) {
+        if (userRepository.existsByEmailAddress(request.emailAddress())) {
             throw new EmailTaken("Email is already registered.");
         }
 
         User user = userMapper.mapToEntity(
                 new CreateUserRequest(
                         request.username(),
-                        request.email(),
+                        request.emailAddress(),
                         request.password()
                 )
         );

@@ -2,6 +2,7 @@ package eu.divum.divumbackend.controllers;
 
 import eu.divum.divumbackend.config.JwtConfig;
 import eu.divum.divumbackend.dtos.auth.*;
+import eu.divum.divumbackend.dtos.user.CreateUserRequest;
 import eu.divum.divumbackend.services.AuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,7 +40,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(
-            @Valid @RequestBody RegisterUserRequest request,
+            @Valid @RequestBody CreateUserRequest request,
             HttpServletResponse response,
             UriComponentsBuilder uriBuilder
     ) {
