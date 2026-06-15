@@ -5,14 +5,16 @@ info:
 
 http:
   method: PATCH
-  url: "{{address}}/{{base_route}}/users/{{user_id}}"
+  url: "{{address}}/{{base_route}}/users/me"
   body:
     type: json
     data: |-
       {
         "username": "Dimitar2"
       }
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 settings:
   encodeUrl: true

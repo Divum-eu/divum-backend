@@ -2,18 +2,16 @@ package eu.divum.divumbackend.domain;
 
 
 import jakarta.persistence.*;
-
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
-
-import org.hibernate.annotations.SQLDelete;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
-import java.util.UUID;
 import java.time.Instant;
+import java.util.UUID;
 
 import static eu.divum.divumbackend.constants.ServerMachineConstants.IP_MAX_LENGTH;
 

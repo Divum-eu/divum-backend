@@ -10,20 +10,23 @@ import eu.divum.divumbackend.exceptions.user.EmailTaken;
 import eu.divum.divumbackend.exceptions.user.SameUsernameUpdate;
 import eu.divum.divumbackend.exceptions.user.UserNotFound;
 import eu.divum.divumbackend.exceptions.user.UsernameTaken;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import tools.jackson.databind.exc.InvalidFormatException;
+
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -188,6 +191,51 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage()
         );
         problemDetail.setTitle("An issue occurred trying to generate a JWT signing key.");
+        return problemDetail;
+    }
+
+
+    @ExceptionHandler(MinecraftServerInstanceNotOwned.class)
+    public ProblemDetail handleMinecraftServerInstanceNotOwned() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND,
+                "Minecraft server instance not found."
+        );
+
+        problemDetail.setTitle("Not found");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ProblemDetail handleAuthenticationException() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Wrong credentials."
+        );
+
+        problemDetail.setTitle("Wrong credentials");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ProblemDetail handleBadCredentials() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Invalid credentials."
+        );
+
+        problemDetail.setTitle("Authentication failed");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolation() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                "The provided data conflicts with an existing record. Please check your inputs and try again."
+        );
+
+        problemDetail.setTitle("Data conflict");
         return problemDetail;
     }
 
