@@ -8,17 +8,17 @@ public interface MinecraftServerInstanceService {
 
     DaemonConnectionInfo getDaemonConnectionInfoById(String serverId);
 
-    MinecraftServerInstanceResponse getById(String serverId);
+    MinecraftServerInstanceResponse getById(String serverId, String userId);
 
     MinecraftServerInstanceResponse getByAddress(String address);
 
-    void start(String serverId);
+    void start(String serverId, String userId);
 
-    void stop(String serverId);
+    void stop(String serverId, String userId);
 
-    void remove(String serverId);
+    void remove(String serverId, String userId);
 
-    String create(MinecraftServerInstanceRequest request);
+    String create(MinecraftServerInstanceRequest request, String userId);
 
-    MinecraftServerInstanceResponse update(String serverId, MinecraftServerInstanceRequest request);
+    MinecraftServerInstanceResponse update(String serverId, MinecraftServerInstanceRequest request, String userId);
 }

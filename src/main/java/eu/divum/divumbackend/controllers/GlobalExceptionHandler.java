@@ -4,21 +4,27 @@ import eu.divum.divumbackend.exceptions.HTTPRequestException;
 import eu.divum.divumbackend.exceptions.minecraftserverinstance.*;
 import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
 import eu.divum.divumbackend.exceptions.servermachine.NotEnoughServerResources;
+import eu.divum.divumbackend.exceptions.user.EmailTaken;
+import eu.divum.divumbackend.exceptions.user.SameUsernameUpdate;
 import eu.divum.divumbackend.exceptions.user.UserNotFound;
+import eu.divum.divumbackend.exceptions.user.UsernameTaken;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import tools.jackson.databind.exc.InvalidFormatException;
+
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -29,6 +35,42 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage()
         );
         problemDetail.setTitle("User not found.");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(UsernameTaken.class)
+    public ProblemDetail handleUsernameTaken(UsernameTaken ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                ex.getMessage()
+        );
+
+        problemDetail.setTitle("Username is already taken.");
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(EmailTaken.class)
+    public ProblemDetail handleEmailTaken(EmailTaken ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                ex.getMessage()
+        );
+
+        problemDetail.setTitle("Email is already in use.");
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(SameUsernameUpdate.class)
+    public ProblemDetail handleSameUsernameUpdate(SameUsernameUpdate ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNPROCESSABLE_CONTENT,
+                ex.getMessage()
+        );
+
+        problemDetail.setTitle("Username update with the same username.");
+
         return problemDetail;
     }
 
@@ -127,6 +169,50 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage()
         );
         problemDetail.setTitle("Not enough server resources for the given RAM and CPU requirements are available.");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(MinecraftServerInstanceNotOwned.class)
+    public ProblemDetail handleMinecraftServerInstanceNotOwned() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND,
+                "Minecraft server instance not found."
+        );
+
+        problemDetail.setTitle("Not found");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ProblemDetail handleAuthenticationException() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Wrong credentials."
+        );
+
+        problemDetail.setTitle("Wrong credentials");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ProblemDetail handleBadCredentials() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Invalid credentials."
+        );
+
+        problemDetail.setTitle("Authentication failed");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolation() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                "The provided data conflicts with an existing record. Please check your inputs and try again."
+        );
+
+        problemDetail.setTitle("Data conflict");
         return problemDetail;
     }
 

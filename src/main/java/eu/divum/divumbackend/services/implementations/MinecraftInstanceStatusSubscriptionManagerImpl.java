@@ -48,7 +48,9 @@ public class MinecraftInstanceStatusSubscriptionManagerImpl implements Minecraft
                 if (session.isOpen()) {
                     try {
                         session.sendMessage(message);
-                    } catch (IOException ignored) {}
+                    } catch (IOException e) {
+                        removeSubscriber(instanceId, session);
+                    }
                 }
             }
         }

@@ -14,13 +14,13 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer {
 
     @Value("${cors.allowed-origins}")
-    private String allowedOrigins;
+    private String[] allowedOrigins;
 
     private final FrontendWebSocketHandler frontendHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(frontendHandler, "/v1/minecraft-servers/*/status")
+        registry.addHandler(frontendHandler, "/v1/minecraft-servers/*/status/ws")
                 .setAllowedOrigins(allowedOrigins); // TODO: Configure CORS properly for production
     }
 }

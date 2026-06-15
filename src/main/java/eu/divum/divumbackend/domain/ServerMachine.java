@@ -1,21 +1,19 @@
 package eu.divum.divumbackend.domain;
 
 
-import eu.divum.divumbackend.constants.DomainConstants;
-
 import jakarta.persistence.*;
-
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
-
-import org.hibernate.annotations.SQLDelete;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
-import java.util.UUID;
 import java.time.Instant;
+import java.util.UUID;
+
+import static eu.divum.divumbackend.constants.ServerMachineConstants.IP_MAX_LENGTH;
 
 @Entity
 @Table(name = "server_machines", uniqueConstraints = @UniqueConstraint(columnNames = {"ip"}), schema = "divum")
@@ -31,7 +29,7 @@ public class ServerMachine {
     @Column(name = "id", columnDefinition = "uuid")
     private UUID id;
 
-    @Column(name = "ip", nullable = false, length = DomainConstants.SERVER_MACHINE_IP_MAX_LENGTH)
+    @Column(name = "ip", nullable = false, length = IP_MAX_LENGTH)
     private String ip;
 
     @Column(name = "total_ram_mb", nullable = false)

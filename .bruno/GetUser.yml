@@ -5,8 +5,10 @@ info:
 
 http:
   method: GET
-  url: "{{address}}/{{base_route}}/users/{{user_id}}"
-  auth: inherit
+  url: "{{address}}/{{base_route}}/users/me"
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 runtime:
   variables:

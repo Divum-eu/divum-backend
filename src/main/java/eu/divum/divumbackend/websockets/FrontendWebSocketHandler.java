@@ -1,8 +1,6 @@
 package eu.divum.divumbackend.websockets;
 
 import eu.divum.divumbackend.dtos.minecraftserverinstance.DaemonConnectionInfo;
-import eu.divum.divumbackend.exceptions.minecraftserverinstance.DaemonConnectionException;
-import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceNotFound;
 import eu.divum.divumbackend.services.MinecraftServerInstanceService;
 import eu.divum.divumbackend.services.implementations.DaemonConnectionManagerImpl;
 import eu.divum.divumbackend.services.implementations.MinecraftInstanceStatusSubscriptionManagerImpl;
@@ -17,6 +15,9 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 @RequiredArgsConstructor
 @Component
 public class FrontendWebSocketHandler extends TextWebSocketHandler {
+
+    @Value("${divum-daemon.ws-scheme}")
+    private String daemonWsScheme;
 
     @Value("${divum-daemon.api-version}/minecraft-servers")
     private String daemonEndpointAddress;
@@ -35,14 +36,14 @@ public class FrontendWebSocketHandler extends TextWebSocketHandler {
 
         try {
             DaemonConnectionInfo connectionInfo = instanceService.getDaemonConnectionInfoById(instanceId);
-            String daemonUrl = "ws://" + connectionInfo.serverIp() + daemonEndpointAddress + "/" + connectionInfo.daemonId() + "/status/ws";
+            String daemonUrl = daemonWsScheme + connectionInfo.serverIp() + daemonEndpointAddress + "/" + connectionInfo.daemonId() + "/status/ws";
 
             session.getAttributes().put("daemonUrl", daemonUrl); // Used when closing the session
 
             daemonConnectionManager.connectIfNeeded(daemonUrl, instanceId);
             subscriptionManager.addSubscriber(instanceId, daemonUrl, session);
         } catch (Exception e) {
-            closeQuietly(session, CloseStatus.BAD_DATA);
+            closeQuietly(session, CloseStatus.POLICY_VIOLATION);
         }
     }
 
@@ -61,7 +62,6 @@ public class FrontendWebSocketHandler extends TextWebSocketHandler {
 
     private String getInstanceIdFromSession(WebSocketSession session) {
         if (session.getUri() == null) return null;
-
         // example path: /api/v1/minecraft-servers/5b721cc4-6404-455d-9b68-4811437ba977/status
         String path = session.getUri().getPath();
         String[] segments = path.split("/");

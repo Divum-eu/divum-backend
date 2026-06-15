@@ -1,18 +1,14 @@
 package eu.divum.divumbackend.domain;
 
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceConfiguration;
-
-import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
+import jakarta.persistence.Table;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
-
-import org.hibernate.annotations.SQLDelete;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
-
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.type.SqlTypes;
 
 @Entity
