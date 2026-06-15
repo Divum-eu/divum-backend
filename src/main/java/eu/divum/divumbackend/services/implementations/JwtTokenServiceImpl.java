@@ -88,11 +88,6 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         return new JWKSet(keys).toJSONObject();
     }
 
-    @PostConstruct
-    private void initSigningContext() {
-        rotateJwtSigningContext();
-    }
-
     @Scheduled(
             fixedRateString = "${security.jwt.key-rotation-period-hours}",
             timeUnit = TimeUnit.HOURS)
