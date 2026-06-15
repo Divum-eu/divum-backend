@@ -1,8 +1,6 @@
 package eu.divum.divumbackend.websockets;
 
 import eu.divum.divumbackend.dtos.minecraftserverinstance.DaemonConnectionInfo;
-import eu.divum.divumbackend.exceptions.minecraftserverinstance.DaemonConnectionException;
-import eu.divum.divumbackend.exceptions.minecraftserverinstance.MinecraftServerInstanceNotFound;
 import eu.divum.divumbackend.services.MinecraftServerInstanceService;
 import eu.divum.divumbackend.services.implementations.DaemonConnectionManagerImpl;
 import eu.divum.divumbackend.services.implementations.MinecraftInstanceStatusSubscriptionManagerImpl;

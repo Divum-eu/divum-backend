@@ -1,23 +1,20 @@
 package eu.divum.divumbackend.domain;
 
 import jakarta.persistence.*;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
-import org.hibernate.annotations.SQLDelete;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
-
 import java.util.UUID;
 
-import static eu.divum.divumbackend.constants.UserConstants.USERNAME_MAX_LENGTH;
 import static eu.divum.divumbackend.constants.UserConstants.EMAIL_ADDRESS_MAX_LENGTH;
+import static eu.divum.divumbackend.constants.UserConstants.USERNAME_MAX_LENGTH;
 
 @Entity
 @Table(

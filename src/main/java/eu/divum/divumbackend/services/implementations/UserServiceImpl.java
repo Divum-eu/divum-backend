@@ -1,27 +1,20 @@
 package eu.divum.divumbackend.services.implementations;
 
 import eu.divum.divumbackend.domain.User;
-
 import eu.divum.divumbackend.dtos.user.CreateUserRequest;
 import eu.divum.divumbackend.dtos.user.GetUserResponse;
 import eu.divum.divumbackend.dtos.user.UpdateUserRequest;
-
 import eu.divum.divumbackend.dtos.user.UpdateUserResponse;
 import eu.divum.divumbackend.exceptions.user.EmailTaken;
 import eu.divum.divumbackend.exceptions.user.SameUsernameUpdate;
+import eu.divum.divumbackend.exceptions.user.UserNotFound;
 import eu.divum.divumbackend.exceptions.user.UsernameTaken;
 import eu.divum.divumbackend.mappers.user.UserMapper;
-
-import eu.divum.divumbackend.exceptions.user.UserNotFound;
-
 import eu.divum.divumbackend.repositories.UserRepository;
-
 import eu.divum.divumbackend.services.AuthenticationService;
 import eu.divum.divumbackend.services.UserService;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -29,6 +22,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
 
     private final UserMapper mapper;
@@ -46,11 +40,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String create(CreateUserRequest request) {
-        if (userRepository.findByUsername(request.username()).isPresent()) {
+        if (userRepository.existsByUsername(request.username())) {
             throw new UsernameTaken("A user with the given username already exists.");
         }
 
-        if (userRepository.findByEmailAddress(request.emailAddress()).isPresent()) {
+        if (userRepository.existsByEmailAddress(request.emailAddress())) {
             throw new EmailTaken("A user with the given email already exists.");
         }
 
@@ -73,7 +67,7 @@ public class UserServiceImpl implements UserService {
             throw new SameUsernameUpdate("Cannot set username to the same value.");
         }
 
-        if (userRepository.findByUsername(request.username()).isPresent()) {
+        if (userRepository.existsByUsername(request.username())) {
             throw new UsernameTaken("A user with the given username already exists.");
         }
 
