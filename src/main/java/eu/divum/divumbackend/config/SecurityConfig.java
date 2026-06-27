@@ -82,6 +82,7 @@ public class SecurityConfig {
                                 .requestMatchers("/v1/auth/register").permitAll()
                                 .requestMatchers("/v1/auth/refresh").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/v1/users/*").permitAll()
+                                .requestMatchers("/.well-known/jwks.json").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(c -> {

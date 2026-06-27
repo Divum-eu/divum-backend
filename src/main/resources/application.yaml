@@ -52,7 +52,13 @@ cloudflare:
 divum-daemon:
   api-scheme: https://
   api-version: /api/v1
+  jwt-token-lifetime-seconds: 30
 
 server:
   servlet:
     context-path: /api
+
+security:
+  jwt:
+    daemon-issuer: divum-backend
+    key-rotation-period-hours: 24

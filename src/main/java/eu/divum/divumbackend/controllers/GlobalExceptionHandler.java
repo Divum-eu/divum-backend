@@ -1,6 +1,8 @@
 package eu.divum.divumbackend.controllers;
 
 import eu.divum.divumbackend.exceptions.HTTPRequestException;
+import eu.divum.divumbackend.exceptions.jwt.JwtSigningContextGenerationError;
+import eu.divum.divumbackend.exceptions.jwt.JwtWriteError;
 import eu.divum.divumbackend.exceptions.minecraftserverinstance.*;
 import eu.divum.divumbackend.exceptions.servermachine.NoAvailableServerMachines;
 import eu.divum.divumbackend.exceptions.servermachine.NotEnoughServerResources;
@@ -171,6 +173,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         problemDetail.setTitle("Not enough server resources for the given RAM and CPU requirements are available.");
         return problemDetail;
     }
+
+    @ExceptionHandler(JwtWriteError.class)
+    public ProblemDetail handleJwtWriteError(JwtWriteError ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ex.getMessage()
+        );
+        problemDetail.setTitle("An issue occurred trying to sign a JWT.");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(JwtSigningContextGenerationError.class)
+    public ProblemDetail handleJwtSigningContextGenerationError(JwtSigningContextGenerationError ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ex.getMessage()
+        );
+        problemDetail.setTitle("An issue occurred trying to generate a JWT signing key.");
+        return problemDetail;
+    }
+
 
     @ExceptionHandler(MinecraftServerInstanceNotOwned.class)
     public ProblemDetail handleMinecraftServerInstanceNotOwned() {

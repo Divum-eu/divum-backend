@@ -5,3 +5,9 @@ divum-daemon:
   api-scheme: http://
   api-version: :8000/api/v1
   ws-scheme: ws://
+  jwt-token-lifetime-seconds: 60
+
+security:
+  jwt:
+    daemon-issuer: divum-backend-dev
+    key-rotation-period-hours: 24
