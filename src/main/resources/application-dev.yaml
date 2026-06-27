@@ -1,5 +1,5 @@
 cors:
-  allowed-origins: "*"
+  allowed-origins: "https://divum.eu,http://localhost:4200" # Comma separated value, DON'T add whitespace
 
 divum-daemon:
   api-scheme: http://
