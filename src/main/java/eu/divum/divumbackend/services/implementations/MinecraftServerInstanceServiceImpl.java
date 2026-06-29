@@ -66,6 +66,14 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
     private String daemonJwtIssuer;
 
     @Override
+    public List<MinecraftServerInstanceResponse> getAllByOwner(String userId) {
+        return minecraftServerRepository.findAllByOwnerId(UUID.fromString(userId))
+                .stream()
+                .map(dtoMapper::mapToResponse)
+                .toList();
+    }
+
+    @Override
     public DaemonConnectionInfo getDaemonConnectionInfoById(String serverId) {
         return minecraftServerRepository.findDaemonConnectionInfoById(UUID.fromString(serverId))
                 .orElseThrow(() -> new MinecraftServerInstanceNotFound("Couldn't find Minecraft server instance with id " + serverId));
@@ -247,8 +255,8 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
         String registeredServerDomain = "";
 
         try {
-            registeredServerDomain =
-                    dnsRecordManager.create(request.configuration().getServerAddress(), serverMachine.getIp());
+            // registeredServerDomain =
+            //        dnsRecordManager.create(request.configuration().getServerAddress(), serverMachine.getIp());
 
             String daemonJwt = jwtTokenService.writeSignedToken(Map.of(), daemonJwtIssuer);
 
