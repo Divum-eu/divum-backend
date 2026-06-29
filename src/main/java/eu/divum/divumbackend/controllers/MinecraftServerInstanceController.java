@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,6 +21,13 @@ import java.util.UUID;
 public class MinecraftServerInstanceController {
 
     private final MinecraftServerInstanceService mcServerInstanceService;
+
+    @GetMapping
+    public ResponseEntity<List<MinecraftServerInstanceResponse>> getAllMinecraftServerInstances(
+            @AuthenticationPrincipal UUID userId
+    ) {
+        return ResponseEntity.ok(mcServerInstanceService.getAllByOwner(userId.toString()));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<MinecraftServerInstanceResponse> getMinecraftServerInstanceById(
