@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,4 +27,8 @@ public interface MinecraftServerInstanceRepository extends JpaRepository<Minecra
     @EntityGraph(attributePaths = {"owner"})
     @Query("SELECT msi FROM MinecraftServerInstance msi WHERE msi.id = :id")
     Optional<MinecraftServerInstance> findByIdWithOwner(@Param("id") UUID id);
+
+    @EntityGraph(attributePaths = {"owner"})
+    @Query("SELECT msi FROM MinecraftServerInstance msi WHERE msi.owner.id = :ownerId")
+    List<MinecraftServerInstance> findAllByOwnerId(@Param("ownerId") UUID ownerId);
 }

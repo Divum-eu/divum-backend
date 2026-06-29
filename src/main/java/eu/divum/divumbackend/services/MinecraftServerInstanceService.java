@@ -4,9 +4,13 @@ import eu.divum.divumbackend.dtos.minecraftserverinstance.DaemonConnectionInfo;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceRequest;
 import eu.divum.divumbackend.dtos.minecraftserverinstance.MinecraftServerInstanceResponse;
 
+import java.util.List;
+
 public interface MinecraftServerInstanceService {
 
     DaemonConnectionInfo getDaemonConnectionInfoById(String serverId);
+
+    List<MinecraftServerInstanceResponse> getAllByOwner(String userId);
 
     MinecraftServerInstanceResponse getById(String serverId, String userId);
 
