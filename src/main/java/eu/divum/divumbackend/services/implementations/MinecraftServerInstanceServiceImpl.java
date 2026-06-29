@@ -255,8 +255,8 @@ public class MinecraftServerInstanceServiceImpl implements MinecraftServerInstan
         String registeredServerDomain = "";
 
         try {
-            // registeredServerDomain =
-            //        dnsRecordManager.create(request.configuration().getServerAddress(), serverMachine.getIp());
+            registeredServerDomain =
+                    dnsRecordManager.create(request.configuration().getServerAddress(), serverMachine.getIp());
 
             String daemonJwt = jwtTokenService.writeSignedToken(Map.of(), daemonJwtIssuer);
 
