@@ -8,6 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -52,8 +53,11 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<JwtResponse> refresh(
-            @CookieValue("refreshToken") String refreshToken
+            @CookieValue(value = "refreshToken", required = false) String refreshToken
     ) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         AuthenticatedDto authenticatedDto = authenticationService.refresh(refreshToken);
         return ResponseEntity.accepted().body(new JwtResponse(authenticatedDto.accessToken()));
     }
