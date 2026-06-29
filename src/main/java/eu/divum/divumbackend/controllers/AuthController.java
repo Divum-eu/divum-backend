@@ -9,10 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -55,9 +52,9 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<JwtResponse> refresh(
-            @Valid @RequestBody RefreshTokenRequest request
+            @CookieValue("refreshToken") String refreshToken
     ) {
-        AuthenticatedDto authenticatedDto = authenticationService.refresh(request.refreshToken());
+        AuthenticatedDto authenticatedDto = authenticationService.refresh(refreshToken);
         return ResponseEntity.accepted().body(new JwtResponse(authenticatedDto.accessToken()));
     }
 
