@@ -5,6 +5,9 @@ info:
 
 websocket:
   url: "{{address}}/{{base_route}}/minecraft-servers/5b721cc4-6404-455d-9b68-4811437ba977/status/ws"
+  headers:
+    - name: Sec-WebSocket-Protocol
+      value: "{{accessToken}}"
   message:
     type: json
     data: "{}"
