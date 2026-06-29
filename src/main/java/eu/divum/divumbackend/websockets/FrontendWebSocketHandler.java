@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import java.util.Arrays;
+import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 @Component
@@ -63,12 +65,14 @@ public class FrontendWebSocketHandler extends TextWebSocketHandler {
     private String getInstanceIdFromSession(WebSocketSession session) {
         if (session.getUri() == null) return null;
 
-        // example path: /api/v1/minecraft-servers/5b721cc4-6404-455d-9b68-4811437ba977/status
+        // path: /api/v1/minecraft-servers/{id}/status/ws
         String path = session.getUri().getPath();
-        String[] segments = path.split("/");
+        String[] segments = Arrays.stream(path.split("/"))
+                .filter(Predicate.not(String::isEmpty))
+                .toArray(String[]::new);
 
-        if (segments.length >= 2) {
-            return segments[segments.length - 2];
+        if (segments.length == 6) {
+            return segments[segments.length - 3];
         }
 
         return null;
