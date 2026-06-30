@@ -31,7 +31,7 @@ public class MinecraftServerInstanceController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MinecraftServerInstanceResponse> getMinecraftServerInstanceById(
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @AuthenticationPrincipal UUID userId
             ) {
         return ResponseEntity.ok(mcServerInstanceService.getById(id, userId.toString()));
@@ -39,7 +39,7 @@ public class MinecraftServerInstanceController {
 
     @PostMapping("/{id}/start")
     public ResponseEntity<Void> startMinecraftServerInstance(
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @AuthenticationPrincipal UUID userId
     ) {
         mcServerInstanceService.start(id, userId.toString());
@@ -48,7 +48,7 @@ public class MinecraftServerInstanceController {
 
     @PostMapping("/{id}/stop")
     public ResponseEntity<Void> stopMinecraftServerInstance(
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @AuthenticationPrincipal UUID userId
     ) {
         mcServerInstanceService.stop(id, userId.toString());
@@ -57,7 +57,7 @@ public class MinecraftServerInstanceController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMinecraftServerInstance(
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @AuthenticationPrincipal UUID userId
     ) {
         mcServerInstanceService.remove(id, userId.toString());
@@ -77,7 +77,7 @@ public class MinecraftServerInstanceController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<MinecraftServerInstanceResponse> updateMinecraftServerInstance(
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @Valid @RequestBody MinecraftServerInstanceRequest request,
             @AuthenticationPrincipal UUID userId
     ) {
