@@ -52,6 +52,7 @@ cloudflare:
 divum-daemon:
   api-scheme: https://
   api-version: /api/v1
+  ws-scheme: wss://
   jwt-token-lifetime-seconds: 30
 
 server:
